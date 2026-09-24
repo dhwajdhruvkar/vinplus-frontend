@@ -14,14 +14,17 @@ export function useDialogFocus(onClose) {
     function focusableElements() {
       return [
         ...container.querySelectorAll(
-          'button:not(:disabled), input, select, [tabindex="0"]',
+          'button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea, a[href], [tabindex="0"]',
         ),
       ];
     }
 
     // Handles Escape and wraps Tab navigation between the first and last controls.
     function handleKeyDown(event) {
-      if (event.key === "Escape") closeRef.current();
+      if (event.key === "Escape") {
+        event.stopPropagation();
+        closeRef.current();
+      }
       if (event.key !== "Tab") return;
 
       const elements = focusableElements();
@@ -37,9 +40,9 @@ export function useDialogFocus(onClose) {
     }
 
     focusableElements()[0]?.focus();
-    document.addEventListener("keydown", handleKeyDown);
+    container.addEventListener("keydown", handleKeyDown);
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
+      container.removeEventListener("keydown", handleKeyDown);
       previousElement?.focus();
     };
   }, []);

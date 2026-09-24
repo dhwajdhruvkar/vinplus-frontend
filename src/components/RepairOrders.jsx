@@ -1,57 +1,88 @@
-import React from "react";
-import { IconButton, Panel } from "./Panel.jsx";
+import React, { useState } from "react";
+import { IconButton } from "./Panel.jsx";
+import { ChartPanel } from "./ChartPanel.jsx";
+import { SearchSelect } from "./SearchSelect.jsx";
 import { RecordsTable } from "./RecordsTable.jsx";
-import { records } from "../data/dashboard.js";
+import { records, tableColumns } from "../data/dashboard.js";
 
-// Shows repair-order filters and the table for the current selection.
-export function RepairOrders({ rows, filters, onFilterChange, onOpenRecord }) {
-  // Selecting all or unchecking a status removes the status filter.
+// Shows searchable order/status filters and the cross-filtering repair-order table.
+export function RepairOrders({
+  rows,
+  filters,
+  onFilterChange,
+  onSelectRecord,
+  onResetSelection,
+  resetKey,
+}) {
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [statusQuery, setStatusQuery] = useState("");
+  const selected = Array.isArray(filters.status)
+    ? filters.status
+    : filters.status
+      ? [filters.status]
+      : [];
+
+  // Combines both checked statuses as an unrestricted status selection.
   function changeStatus(status, checked) {
-    const value = checked && status !== "Select all" ? status : "";
-    onFilterChange("status", value);
+    if (status === "Select all") {
+      onFilterChange("status", "");
+      return;
+    }
+    const next = checked
+      ? [...selected, status]
+      : selected.filter((item) => item !== status);
+    onFilterChange("status", next.length === 2 || !next.length ? "" : next);
   }
 
   return (
     <div className="detail-row" id="ro-details">
       <div className="detail-filters">
-        <div className="select-panel">
-          <div className="filter-label">
-            <label htmlFor="ro-select">Repair Order No</label>
-            <IconButton
-              icon="refresh"
-              label="Reset repair order"
-              onClick={() => onFilterChange("ro", "")}
-            />
-          </div>
-          <select
-            id="ro-select"
-            value={filters.ro}
-            onChange={(e) => onFilterChange("ro", e.target.value)}
-          >
-            <option value="">Select data</option>
-            {records.map((record) => (
-              <option key={record.ro}>{record.ro}</option>
-            ))}
-          </select>
-        </div>
+        <SearchSelect
+          label="Repair Order No"
+          options={records.map((record) => record.ro)}
+          value={filters.ro}
+          onChange={(value) => onFilterChange("ro", value)}
+        />
         <div className="select-panel status-panel">
           <div className="filter-label">
             <label>Status</label>
-            <IconButton
-              icon="refresh"
-              label="Reset status"
-              onClick={() => onFilterChange("status", "")}
-            />
+            <div>
+              <IconButton
+                icon="search"
+                label="Search status"
+                onClick={() => setSearchOpen((current) => !current)}
+              />
+              <IconButton
+                icon="refresh"
+                label="Reset status"
+                onClick={() => {
+                  onFilterChange("status", "");
+                  setStatusQuery("");
+                }}
+              />
+            </div>
           </div>
-          {["Select all", "Fully Recovered", "Partially Recovered"].map(
-            (status) => (
+          {searchOpen && (
+            <input
+              className="status-search"
+              aria-label="Find status"
+              placeholder="Search"
+              value={statusQuery}
+              onChange={(event) => setStatusQuery(event.target.value)}
+            />
+          )}
+          {["Select all", "Fully Recovered", "Partially Recovered"]
+            .filter((status) =>
+              status.toLowerCase().includes(statusQuery.toLowerCase()),
+            )
+            .map((status) => (
               <label className="checkbox-label" key={status}>
                 <input
                   type="checkbox"
                   checked={
                     status === "Select all"
-                      ? !filters.status
-                      : filters.status === status
+                      ? !selected.length
+                      : selected.includes(status)
                   }
                   onChange={(event) =>
                     changeStatus(status, event.target.checked)
@@ -59,13 +90,32 @@ export function RepairOrders({ rows, filters, onFilterChange, onOpenRecord }) {
                 />
                 {status}
               </label>
-            ),
-          )}
+            ))}
         </div>
       </div>
-      <Panel title="RO Details" className="records-panel">
-        <RecordsTable rows={rows} onRowClick={onOpenRecord} />
-      </Panel>
+      <ChartPanel
+        key={resetKey}
+        id="records"
+        title="RO Details"
+        className="records-panel"
+        allowTypes={false}
+        comparisonRows={rows}
+        comparisonFiltered={true}
+        rows={rows}
+        columns={tableColumns.map(([key, label]) => [
+          key,
+          label,
+          key === "percent"
+            ? "percent"
+            : ["actual", "expected", "loss"].includes(key)
+              ? "money"
+              : undefined,
+        ])}
+        onReset={onResetSelection}
+        description="Select an RO number to filter the dashboard. Select column headings to sort the table."
+      >
+        {() => <RecordsTable rows={rows} onRowClick={onSelectRecord} />}
+      </ChartPanel>
     </div>
   );
 }

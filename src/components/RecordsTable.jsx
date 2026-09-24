@@ -3,7 +3,7 @@ import { money, tableColumns, unrecoveredPercent } from "../data/dashboard.js";
 
 const amountColumns = ["expected", "actual", "loss"];
 
-// Formats a table cell and makes repair-order numbers open their details.
+// Formats a table cell and makes repair-order numbers filter the dashboard.
 function RecordCell({ row, column, onRowClick }) {
   if (column === "ro")
     return <button onClick={() => onRowClick?.(row)}>{row.ro}</button>;

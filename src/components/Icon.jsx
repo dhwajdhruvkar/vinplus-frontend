@@ -1,5 +1,9 @@
 import React from "react";
 const paths = {
+  up: "M12 21V3M5 10l7-7 7 7",
+  collapse: "M4 10h6V4M20 14h-6v6M3 3l7 7M21 21l-7-7",
+  bars: "M4 21V10h4v11M10 21V3h4v18M16 21V7h4v14",
+  sort: "M4 6h9M4 12h7M4 18h5M18 3v18M15 18l3 3 3-3",
   home: "M3 10 12 3l9 7M5 9v12h5v-7h4v7h5V9",
   grid: "M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z",
   data: "M20 6c0 2-16 2-16 0s16-2 16 0ZM4 6v12c0 3 16 3 16 0V6M4 12c0 3 16 3 16 0",

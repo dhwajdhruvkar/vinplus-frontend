@@ -1,13 +1,21 @@
 import React from "react";
 import Icon from "./Icon.jsx";
+import { KpiMiniChart } from "./KpiMiniChart.jsx";
 import { colors } from "./Charts.jsx";
 import { compactMoney, money } from "../data/dashboard.js";
 
-// Shows the five summary cards and opens a daily breakdown when a chart is selected.
-export function KpiCards({ summary, onDrill, comfortable }) {
+// Shows the five summary cards and keeps each weekday breakdown inside its card.
+export function KpiCards({
+  summary,
+  rows,
+  filtered,
+  onMonthSelect,
+  comfortable,
+}) {
   const cards = [
     {
       title: "Total Sales",
+      metric: "sales",
       sub: "Labor + Parts",
       value: compactMoney(summary.sales),
       footer: "Expected Shop Supplies Recovery",
@@ -18,6 +26,7 @@ export function KpiCards({ summary, onDrill, comfortable }) {
     },
     {
       title: "Shop Supplies Partial Recovery",
+      metric: "partial",
       sub: "Records Requiring Review",
       value: summary.partial,
       denom: summary.total,
@@ -30,6 +39,7 @@ export function KpiCards({ summary, onDrill, comfortable }) {
     },
     {
       title: "Partial Recovery %",
+      metric: "rate",
       sub: "Share of all records",
       value: `${summary.rate.toFixed(2)}%`,
       footer: "Compliance Rate",
@@ -40,6 +50,7 @@ export function KpiCards({ summary, onDrill, comfortable }) {
     },
     {
       title: "Shop Supplies Recovery Status",
+      metric: "actual",
       sub: "Amount of Flagged Records",
       value: compactMoney(summary.actual),
       denom: compactMoney(summary.expected),
@@ -52,6 +63,7 @@ export function KpiCards({ summary, onDrill, comfortable }) {
     },
     {
       title: "Unrecovered Shop Supplies",
+      metric: "loss",
       sub: "Total Reported Loss",
       value: compactMoney(summary.loss),
       footer: "Unrecovered %",
@@ -68,22 +80,23 @@ export function KpiCards({ summary, onDrill, comfortable }) {
     >
       <div className="kpi-grid">
         {cards.map((card) => (
-          <article className="kpi-card" key={card.title}>
+          <article
+            className="kpi-card"
+            key={card.title}
+            style={{ "--chart-color": colors[card.color] }}
+          >
             <h2>{card.title}</h2>
             <p className="kpi-subtitle">{card.sub}</p>
             <div className="kpi-value" title={card.tooltip}>
               {card.value}
               {card.denom !== undefined && <span> / {card.denom}</span>}
             </div>
-            <button
-              className={`kpi-mini-chart ${card.bar ? "bar" : "dot"}`}
-              aria-label={`Show daily ${card.title}`}
-              onClick={() => onDrill(card.title)}
-              style={{ "--chart-color": colors[card.color] }}
-            >
-              <i />
-              <span>Feb</span>
-            </button>
+            <KpiMiniChart
+              card={card}
+              rows={rows}
+              filtered={filtered}
+              onMonthSelect={onMonthSelect}
+            />
             <div className={`kpi-footer ${card.color}`}>
               <span className="kpi-footer-icon">
                 <Icon name={card.icon} size={8} />

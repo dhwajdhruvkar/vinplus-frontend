@@ -7,6 +7,9 @@ import { DashboardCharts } from "./components/DashboardCharts.jsx";
 import { RepairOrders } from "./components/RepairOrders.jsx";
 import { FilterDrawer } from "./components/FilterDrawer.jsx";
 import { DashboardDialog } from "./components/DashboardDialog.jsx";
+import { useDashboardInteractions } from "./hooks/useDashboardInteractions.js";
+import { matchSelections, hasRecordSelection } from "./data/interactions.js";
+import { panels } from "./data/panels.js";
 import { useToast } from "./hooks/useToast.js";
 import {
   readPreference,
@@ -33,8 +36,15 @@ export default function App() {
   );
   const { toast, notify } = useToast();
 
-  const rows = useMemo(() => filterRecords(records, filters), [filters]);
-  const filtered = isFiltered(filters);
+  const interactions = useDashboardInteractions();
+  const embedded = new URLSearchParams(window.location.search).get("chart");
+  const rows = useMemo(
+    () =>
+      matchSelections(filterRecords(records, filters), interactions.selections),
+    [filters, interactions.selections],
+  );
+  const filtered =
+    isFiltered(filters) || hasRecordSelection(interactions.selections);
   // The default totals match the reference; filters use the available sample rows.
   const summary = filtered ? summarize(rows) : referenceSummary;
 
@@ -46,6 +56,7 @@ export default function App() {
   // Restores the original dashboard selection.
   function resetFilters() {
     setFilters({ ...defaultFilters });
+    interactions.reset();
     notify("Dashboard reset to the default selection.");
   }
 
@@ -77,16 +88,6 @@ export default function App() {
     notify(`${rows.length} repair orders exported.`);
   }
 
-  // Opens the repair orders associated with a selected chart or date.
-  function openRecords(title, field, value) {
-    setDialog({ type: "records", title, field, value });
-  }
-
-  // Opens the details of one repair order.
-  function openRecord(record) {
-    setDialog({ type: "record", title: `Repair Order ${record.ro}`, record });
-  }
-
   // Takes the user to the repair-order table from a menu or dialog.
   function reviewRecords() {
     setDialog(null);
@@ -99,6 +100,37 @@ export default function App() {
   function openFilters() {
     setDialog(null);
     setIsFilterOpen(true);
+  }
+
+  if (embedded === "records") {
+    return (
+      <div className="embedded-chart embedded-records">
+        <RepairOrders
+          rows={rows}
+          filters={filters}
+          onFilterChange={updateFilter}
+          onSelectRecord={(record) =>
+            interactions.select("records", "RO Details", "ro", record.ro)
+          }
+          onResetSelection={() => interactions.resetPanel("records")}
+          resetKey={interactions.revision}
+        />
+      </div>
+    );
+  }
+
+  if (embedded && panels[embedded]) {
+    return (
+      <DashboardCharts
+        embedded={embedded}
+        rows={rows}
+        filtered={filtered}
+        summary={summary}
+        filters={filters}
+        onFilterChange={updateFilter}
+        interactions={interactions}
+      />
+    );
   }
 
   return (
@@ -117,6 +149,8 @@ export default function App() {
         />
         <div className="dashboard-scroll">
           <SelectionBar
+            selections={interactions.selections}
+            onClearSelection={interactions.remove}
             filters={filters}
             onOpenFilters={openFilters}
             onFilterChange={updateFilter}
@@ -124,7 +158,19 @@ export default function App() {
           <KpiCards
             summary={summary}
             comfortable={comfortable}
-            onDrill={(title) => setDialog({ type: "daily", title })}
+            rows={rows}
+            filtered={filtered}
+            onMonthSelect={() =>
+              interactions.select(
+                "kpi",
+                "Mon - Close date",
+                "month",
+                "2024-02",
+                undefined,
+                0,
+                "Feb",
+              )
+            }
           />
           <div className="dashboard-grid">
             <DashboardCharts
@@ -133,16 +179,17 @@ export default function App() {
               summary={summary}
               filters={filters}
               onFilterChange={updateFilter}
-              onOpenRecords={openRecords}
-              onOpenChart={(title, chart) =>
-                setDialog({ type: "chart", title, chart })
-              }
+              interactions={interactions}
             />
             <RepairOrders
               rows={rows}
               filters={filters}
               onFilterChange={updateFilter}
-              onOpenRecord={openRecord}
+              onSelectRecord={(record) =>
+                interactions.select("records", "RO Details", "ro", record.ro)
+              }
+              onResetSelection={() => interactions.resetPanel("records")}
+              resetKey={interactions.revision}
             />
           </div>
         </div>
@@ -164,8 +211,6 @@ export default function App() {
           summary={summary}
           filters={filters}
           onClose={() => setDialog(null)}
-          onOpenRecords={openRecords}
-          onOpenRecord={openRecord}
           onReviewRecords={reviewRecords}
           onOpenFilters={openFilters}
         />

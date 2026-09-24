@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { SearchSelect } from "./SearchSelect.jsx";
 import Icon from "./Icon.jsx";
 import { IconButton } from "./Panel.jsx";
 import { useDialogFocus } from "../hooks/useDialogFocus.js";
@@ -51,19 +52,21 @@ export function FilterDrawer({
             <Icon name="filter" />
             Filters
           </h2>
-          <select
-            aria-label="Set Preference"
-            value=""
-            onChange={() => {
-              const value = onLoad();
-              if (value) setDraft(value);
-            }}
-          >
-            <option value="">Set Preference</option>
-            <option value="saved" disabled={!saved}>
-              Saved preference
-            </option>
-          </select>
+          {onLoad && (
+            <select
+              aria-label="Set Preference"
+              value=""
+              onChange={() => {
+                const value = onLoad();
+                if (value) setDraft(value);
+              }}
+            >
+              <option value="">Set Preference</option>
+              <option value="saved" disabled={!saved}>
+                Saved preference
+              </option>
+            </select>
+          )}
           <IconButton icon="close" label="Close filters" onClick={onClose} />
         </header>
         <div className="filter-body">
@@ -109,17 +112,12 @@ export function FilterDrawer({
             )
             .map(([key, label, options]) => (
               <div className="filter-field" key={key}>
-                <label htmlFor={`filter-${key}`}>{label}</label>
-                <select
-                  id={`filter-${key}`}
+                <SearchSelect
+                  label={label}
+                  options={options}
                   value={draft[key]}
-                  onChange={(e) => change(key, e.target.value)}
-                >
-                  <option value="">All</option>
-                  {options.map((o) => (
-                    <option key={o}>{o}</option>
-                  ))}
-                </select>
+                  onChange={(value) => change(key, value)}
+                />
               </div>
             ))}
           {error && (
@@ -138,12 +136,14 @@ export function FilterDrawer({
           >
             Reset Filters
           </button>
-          <button
-            className="primary-button"
-            onClick={() => submitDraft(onSave)}
-          >
-            Save Preferences
-          </button>
+          {onSave && (
+            <button
+              className="primary-button"
+              onClick={() => submitDraft(onSave)}
+            >
+              Save Preferences
+            </button>
+          )}
           <button
             className="primary-button"
             onClick={() => submitDraft(onApply)}

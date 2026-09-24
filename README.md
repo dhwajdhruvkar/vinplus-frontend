@@ -22,21 +22,27 @@ The `dist/` folder can be served by any static web host. This project has no ser
 
 ## What works
 
-- Date, manager, advisor, status, VIN, and repair-order filtering.
-- Sortable, scrollable repair-order table with record detail dialogs.
-- Chart bar drill-downs, daily summaries, hover values, and chart expansion.
-- CSV export of the current table selection.
-- Saved filter preferences in browser local storage.
-- Reset, larger KPI view, and dashboard insights.
+- Five KPI cards switch between monthly points and weekday charts in place.
+- Dealer and VIN count charts filter the dashboard; other charts open their own inline tables.
+- Manager details drill into recovery status. Advisor, monthly, and VIN tables can select an RO.
+- Selection chips combine across charts. Drill-up and per-panel reset clear only dependent selections.
+- Searchable advisor and RO selectors support multiple selections, Apply, and Cancel.
+- Dates, managers, advisors, VINs, status, and table sorting work with local records.
+- Chart toolbars support chart types, metric sorting, table view, fullscreen, and independent comparisons.
+- CSV and PNG exports create local downloads; PDF uses the browser's print dialog.
+- Chart notes and filter preferences save in browser storage. Share and Embed produce local frontend links.
+- Insight generation and guided analysis use deterministic local calculations.
 - Responsive layouts, keyboard controls, dialog focus management, and empty states.
+
+See [the interaction guide](docs/interactions.md) for the observed behavior and frontend boundaries.
 
 ## Reference fidelity and sample data
 
-The initial summary values reproduce the visible reference: $510.66K total sales, 307 / 446 partial recovery orders, 68.83% partial recovery, $8.38K recovery, and $21.28K unrecovered supplies. The compact cards and space before the first chart row deliberately follow the reference layout. Enable **View preference → Larger summary cards** for a more readable alternative.
+The initial summary values reproduce the visible reference: $510.66K total sales, 307 / 446 partial recovery orders, 68.83% partial recovery, $8.38K recovery, and $21.28K unrecovered supplies. The cards use the full-size reference layout. **View preference → Larger summary cards** offers an expanded view.
 
-The sixteen visible repair-order rows are copied into local fixtures. They are **not the complete 446-record production dataset**. Relationships to managers, dates, advisors, and VINs, and service-sale amounts in those rows, are sample metadata used to demonstrate interactions. Applying filters recalculates values from these sixteen sample rows, so filtered summaries will differ from the original platform. The remaining source chart values were visually transcribed and are approximate where the reference only showed rounded labels.
+The sixteen visible repair-order rows are copied into local fixtures. They are **not the complete 446-record production dataset**. Relationships to managers, dates, advisors, and VINs, service-sale amounts, and the parts/labor/misc split in those rows are sample metadata used to demonstrate interactions. Applying filters recalculates values from these sixteen sample rows, so filtered summaries will differ from the original platform. The remaining source chart values were visually transcribed and are approximate where the reference only showed rounded labels.
 
-The SVG charts, icons, and logo treatment are reconstructed rather than extracted production assets. The platform header, sidebar, tab strip, Edit control, and Dashboard Analyst control are omitted. Insights displays a deterministic summary; it is not connected to an AI service. Only the observed dashboard screen is replicated, not the original platform's editor, account management, or other applications.
+The SVG charts, icons, and logo treatment are reconstructed rather than extracted production assets. The platform header, sidebar, tab strip, Edit control, and Dashboard Analyst control are omitted. Insights displays deterministic calculations; it is not connected to an AI service. Notes and preferences stay in this browser. Share/Embed links point to the running frontend; they do not publish or grant access to the original platform. Only the observed dashboard screen is replicated, not the original platform's editor, account management, or other applications.
 
 ## Connect your backend later
 
@@ -66,24 +72,28 @@ For production, replace `referenceSummary` and the default chart fixtures with b
 
 ## Source map
 
-- `src/App.jsx`: page layout, selected filters, and actions shared by components.
-- `src/components/DashboardToolbar.jsx`: title, menus, and toolbar actions.
-- `src/components/SelectionBar.jsx`: active dates and removable filter chips.
-- `src/components/KpiCards.jsx`: the five summary cards.
-- `src/components/DashboardCharts.jsx`: chart panels and drill-down actions.
-- `src/components/Charts.jsx`: reusable SVG charts and tooltips.
-- `src/components/FilterDrawer.jsx`: draft filters, date validation, and saved preferences.
-- `src/components/RepairOrders.jsx`: repair-order and status filters beside the table.
-- `src/components/RecordsTable.jsx`: sorting and formatting for repair-order rows.
-- `src/components/DashboardDialog.jsx`: record details, daily metrics, insights, and help.
-- `src/components/Panel.jsx` and `Modal.jsx`: shared panel and dialog layouts.
-- `src/components/Icon.jsx` and `Logo.jsx`: local SVG icons and branding.
-- `src/hooks/`: dialog keyboard focus and temporary toast messages.
-- `src/utils/browser.js`: browser storage and CSV downloads.
-- `src/data/dashboard.js`: sample records and filter/summary/CSV logic.
-- `src/data/chartData.js`: default chart fixtures and filtered chart data.
-- `src/styles.css`: reference styling and responsive breakpoints.
-- `tests/`: checks for filters, totals, chart data, preferences, and CSV exports.
+| File or folder                                             | Responsibility                                                   |
+| ---------------------------------------------------------- | ---------------------------------------------------------------- |
+| `src/App.jsx`                                              | Page state, filters, summary data, and shared actions.           |
+| `src/components/DashboardToolbar.jsx`                      | Dashboard toolbar and view preferences.                          |
+| `src/components/SelectionBar.jsx`                          | Date chips and removable chart selections.                       |
+| `src/components/KpiCards.jsx`, `KpiMiniChart.jsx`          | Five KPI cards and weekday views.                                |
+| `src/components/DashboardCharts.jsx`, `DashboardChart.jsx` | Chart layout and each panel's drill behavior.                    |
+| `src/components/Charts.jsx`, `SeriesChart.jsx`             | SVG charts, tooltips, and alternate chart types.                 |
+| `src/components/ChartPanel.jsx`, `ChartTools.jsx`          | Shared panel actions and fullscreen state.                       |
+| `src/components/DetailTable.jsx`, `RecordsTable.jsx`       | Sortable inline tables and RO table.                             |
+| `src/components/SearchSelect.jsx`, `FilterDrawer.jsx`      | Draft multi-selection and date validation.                       |
+| `src/components/QuickCompare.jsx`, `ChartPreview.jsx`      | Independent comparison cards.                                    |
+| `src/components/ChartInsights.jsx`, `ChartNotes.jsx`       | Local insight preview and browser notes.                         |
+| `src/components/ChartDialog.jsx`, `DashboardDialog.jsx`    | Chart utility dialogs and dashboard help.                        |
+| `src/hooks/`                                               | Selection actions, keyboard focus, and toast messages.           |
+| `src/data/dashboard.js`, `chartData.js`                    | Sample records, reference fixtures, and calculations.            |
+| `src/data/interactions.js`                                 | Selection reducer and cross-filter matching.                     |
+| `src/data/detailData.js`, `kpiData.js`, `salesMix.js`      | Table columns, weekday values, and donut totals.                 |
+| `src/data/panels.js`                                       | Chart labels, metric definitions, and sorting.                   |
+| `src/utils/`                                               | Browser storage, downloads, image export, and print.             |
+| `src/styles.css`, `interactions.css`                       | Reference layout and interaction/responsive styles.              |
+| `tests/`                                                   | Filters, totals, selections, drill-up, exports, and preferences. |
 
 Start with `App.jsx` to follow the page. It passes data and actions to each component through props. The filter drawer edits a local draft; Apply sends that draft back to the page. The cards, charts, and table then use the same filtered rows. Each component and named helper has a short comment explaining its job.
 

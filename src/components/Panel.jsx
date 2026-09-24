@@ -21,20 +21,20 @@ export function IconButton({
     </button>
   );
 }
-// Shows clickable chart drill-down labels separated by arrows.
-export function Breadcrumbs({ items, onSelect }) {
+// Marks the active drill level; the panel arrow handles navigation.
+export function Breadcrumbs({ items, active = 0 }) {
   return (
     <div className="breadcrumbs">
       <Icon name="tree" size={16} />
       {items.map((item, i) => (
         <React.Fragment key={item}>
           {i > 0 && <Icon name="arrow" size={15} />}
-          <button
-            className={i === 0 ? "current" : ""}
-            onClick={() => onSelect?.(item)}
+          <span
+            className={i === active ? "current" : ""}
+            aria-current={i === active ? "step" : undefined}
           >
             {item}
-          </button>
+          </span>
         </React.Fragment>
       ))}
     </div>
@@ -45,7 +45,8 @@ export function Panel({
   title,
   children,
   crumbs,
-  onDrill,
+  active = 0,
+  actions,
   onExpand,
   className = "",
   id,
@@ -54,6 +55,7 @@ export function Panel({
     <section className={`panel ${className}`} id={id} aria-label={title}>
       <header className="panel-header">
         <h2>{title}</h2>
+        {actions}
         {onExpand && (
           <div className="panel-actions">
             <IconButton
@@ -64,7 +66,7 @@ export function Panel({
           </div>
         )}
       </header>
-      {crumbs && <Breadcrumbs items={crumbs} onSelect={onDrill} />}
+      {crumbs && <Breadcrumbs items={crumbs} active={active} />}
       {children}
     </section>
   );

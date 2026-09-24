@@ -237,27 +237,27 @@ a {
   gap: 4px;
 }
 .kpi-card {
-  height: 102px;
+  height: 192px;
   border: 1px solid #e7ebf0;
   background: #fff;
   border-radius: 13px;
   box-shadow: 0 1px 3px #1630490c;
   color: #173350;
-  padding: 5px 6px;
+  padding: 9px;
   position: relative;
   overflow: hidden;
 }
 .kpi-card h2 {
-  font-size: 6.5px;
-  line-height: 9px;
+  font-size: 12px;
+  line-height: 16px;
   font-weight: 700;
   margin: 0;
 }
 .kpi-subtitle {
-  font-size: 5px;
-  line-height: 7px;
+  font-size: 8px;
+  line-height: 12px;
   color: #a6abb4;
-  margin: 0 0 2px;
+  margin: 0 0 9px;
 }
 .kpi-value {
   font-size: 20px;
@@ -267,16 +267,16 @@ a {
   white-space: nowrap;
 }
 .kpi-value > span {
-  font-size: 6.5px;
+  font-size: 12px;
   letter-spacing: 0;
   font-weight: 400;
 }
 .kpi-mini-chart {
   position: absolute;
-  top: 51px;
+  top: 88px;
   left: calc(50% - 22px);
   width: 44px;
-  height: 30px;
+  height: 56px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -284,12 +284,12 @@ a {
   gap: 2px;
 }
 .kpi-mini-chart > span {
-  font-size: 3.5px;
+  font-size: 7px;
   color: #a8b1ba;
 }
 .kpi-mini-chart.bar i {
   width: 32px;
-  height: 20px;
+  height: 46px;
   border-radius: 4px 4px 2px 2px;
   background: linear-gradient(
     var(--chart-color),
@@ -297,8 +297,8 @@ a {
   );
 }
 .kpi-mini-chart.dot i {
-  height: 2px;
-  width: 2px;
+  height: 5px;
+  width: 5px;
   background: var(--chart-color);
   border-radius: 50%;
 }
@@ -329,21 +329,21 @@ a {
 }
 .kpi-footer strong {
   display: block;
-  font-size: 4.8px;
+  font-size: 8px;
   font-weight: 700;
-  line-height: 7px;
+  line-height: 12px;
 }
 .kpi-footer div > span {
   display: block;
-  font-size: 4px;
+  font-size: 8px;
   color: #9ca5ae;
-  line-height: 6px;
+  line-height: 12px;
 }
 .kpi-region.comfortable {
-  height: 245px;
+  height: 275px;
 }
 .comfortable .kpi-card {
-  height: 184px;
+  height: 226px;
   padding: 14px;
 }
 .comfortable .kpi-card h2 {
@@ -467,7 +467,7 @@ a {
   margin-right: 0;
   flex-shrink: 0;
 }
-.breadcrumbs button {
+.breadcrumbs > span {
   font-family: Poppins, Lato, sans-serif;
   font-size: 12px;
   line-height: 20px;
@@ -476,11 +476,11 @@ a {
   color: #737373;
   white-space: nowrap;
 }
-.breadcrumbs button.current {
+.breadcrumbs > span.current {
   font-weight: 600;
   color: #0d1012;
 }
-.breadcrumbs button:hover {
+.breadcrumbs > span:hover {
   text-decoration: underline;
   color: #3179d8;
 }
@@ -1196,7 +1196,7 @@ path.chart-mark:hover {
   .breadcrumbs {
     gap: 8px;
   }
-  .breadcrumbs button {
+  .breadcrumbs > span {
     font-size: 10px;
   }
   .donut-label {
@@ -1327,7 +1327,7 @@ path.chart-mark:hover {
     grid-column: 1/-1;
   }
   .kpi-mini-chart {
-    top: 51px;
+    top: 88px;
   }
   .kpi-subtitle {
     font-size: 6px;
@@ -1336,7 +1336,7 @@ path.chart-mark:hover {
     font-size: 6px;
   }
   .kpi-footer div > span {
-    font-size: 5px;
+    font-size: 8px;
   }
   .comfortable .kpi-grid {
     grid-template-columns: 1fr;
@@ -1359,7 +1359,7 @@ path.chart-mark:hover {
   .panel-header h2 {
     font-size: 11px;
   }
-  .breadcrumbs button {
+  .breadcrumbs > span {
     font-size: 11px;
   }
   .manager-panel {

@@ -4,7 +4,13 @@ import { IconButton } from "./Panel.jsx";
 import { dateLabel } from "../data/dashboard.js";
 
 // Shows the active dates and lets the user clear individual filters.
-export function SelectionBar({ filters, onOpenFilters, onFilterChange }) {
+export function SelectionBar({
+  filters,
+  onOpenFilters,
+  onFilterChange,
+  selections = [],
+  onClearSelection,
+}) {
   return (
     <section className="selection-bar" aria-label="Current selection">
       <div className="selection-label">
@@ -15,6 +21,20 @@ export function SelectionBar({ filters, onOpenFilters, onFilterChange }) {
           onClick={onOpenFilters}
         />
       </div>
+      {selections.map((item) => (
+        <button
+          className="selection-chip extra-chip"
+          key={item.id}
+          onClick={() => onClearSelection(item.id)}
+          title={`Clear ${item.label}`}
+        >
+          <span>
+            {item.label}
+            <strong>{item.displayValue}</strong>
+          </span>
+          <Icon name="close" size={12} />
+        </button>
+      ))}
       {[
         ["Closed Date From", filters.from],
         ["Closed Date To", filters.to],
@@ -49,7 +69,11 @@ export function SelectionBar({ filters, onOpenFilters, onFilterChange }) {
           >
             <span>
               {label}
-              <strong>{filters[key]}</strong>
+              <strong>
+                {Array.isArray(filters[key])
+                  ? filters[key].join(", ")
+                  : filters[key]}
+              </strong>
             </span>
             <Icon name="close" size={12} />
           </button>

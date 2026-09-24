@@ -135,11 +135,11 @@ export function filterRecords(rows, filters) {
     (row) =>
       (!filters.from || row.date >= filters.from) &&
       (!filters.to || row.date <= filters.to) &&
-      (!filters.manager || row.manager === filters.manager) &&
-      (!filters.advisor || row.advisor === filters.advisor) &&
-      (!filters.status || row.status === filters.status) &&
-      (!filters.vin || row.vin === filters.vin) &&
-      (!filters.ro || row.ro === filters.ro) &&
+      matchesFilter(row.manager, filters.manager) &&
+      matchesFilter(row.advisor, filters.advisor) &&
+      matchesFilter(row.status, filters.status) &&
+      matchesFilter(row.vin, filters.vin) &&
+      matchesFilter(row.ro, filters.ro) &&
       (!query ||
         [
           row.ro,
@@ -151,6 +151,13 @@ export function filterRecords(rows, filters) {
           row.vin,
         ].some((value) => value.toLowerCase().includes(query))),
   );
+}
+
+// Matches a single value or any value from a multi-select control.
+export function matchesFilter(value, selection) {
+  if (Array.isArray(selection))
+    return !selection.length || selection.includes(value);
+  return !selection || value === selection;
 }
 // Calculates the totals and recovery percentages displayed in the summary cards.
 export function summarize(rows) {
