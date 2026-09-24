@@ -1,11 +1,15 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { advisors, managers } from "../data/dashboard.js";
+import { DashboardContext } from "./DashboardContext.jsx";
+import { useConversations } from "../conversations/ConversationContext.jsx";
 
-const platforms = ["In-app", "WhatsApp", "Teams"];
+const platforms = ["In-app", "WhatsApp", "Teams", "Outlook"];
 const recipients = [...new Set([...managers, ...advisors])];
 
-// Mirrors the sharing form while keeping recipient choices and drafts in this browser.
-export function ChartShare({ id, title, onClose }) {
+// Keeps the original sharing choices and opens a local conversation for each recipient.
+export function ChartShare({ id, title, snapshot, onClose }) {
+  const { startConversation } = useConversations();
+  const { embed } = useContext(DashboardContext);
   const [selected, setSelected] = useState(["In-app"]);
   const [users, setUsers] = useState({});
   const [comment, setComment] = useState("");
@@ -27,7 +31,19 @@ export function ChartShare({ id, title, onClose }) {
           comment,
         }),
       );
-      setMessage("Sharing draft saved locally. No message has been sent.");
+      startConversation({
+        chart: { id, title, snapshot },
+        platforms: selected,
+        recipients: users,
+        comment,
+      });
+      if (embed) {
+        setMessage(
+          "Sharing draft saved locally. Open the dashboard to continue the conversation.",
+        );
+      } else {
+        onClose();
+      }
     } catch {
       setMessage("This browser could not save the sharing draft.");
     }
@@ -101,9 +117,14 @@ export function ChartShare({ id, title, onClose }) {
         />
       </label>
       <p role="status">{message}</p>
+      {embed && message.startsWith("Sharing draft saved") && (
+        <a href={window.location.pathname} target="_blank" rel="noreferrer">
+          Open dashboard conversations
+        </a>
+      )}
       <p className="muted share-boundary">
-        Frontend preview · recipients are sample choices; sharing saves a local
-        draft.
+        Frontend preview · recipients are sample choices. Share opens a local
+        conversation with this chart attached. No messages are sent.
       </p>
       <div className="dialog-footer">
         <button type="button" onClick={onClose}>

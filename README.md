@@ -22,7 +22,7 @@ The `dist/` folder can be served by any static web host. This project has no ser
 
 ## What works
 
-The UI refresh is isolated in `src/dashboardDesign.css`, imported by `src/main.jsx`. All components, option labels, handlers, data, and frontend workflows remain unchanged from commit `c3145f2`. The stylesheet aligns cards and filters, improves typography and spacing, and keeps the original chart toolbars visible. Share remains in each chart's More menu. It adds hover feedback and short card/menu entrances, with reduced-motion support; standalone embeds retain their original styles.
+The UI refresh is isolated in `src/dashboardDesign.css`, imported by `src/main.jsx`. The existing dashboard options, data and chart workflows are preserved. The additive conversations feature connects the existing Share form to a floating frontend inbox. The stylesheet aligns cards and filters, improves typography and spacing, and keeps the original chart toolbars visible. Share remains in each chart's More menu. It adds hover feedback and short card/menu entrances, with reduced-motion support; standalone embeds retain their original styles.
 
 - Five KPI cards switch between monthly points and weekday charts in place.
 - Dealer and VIN count charts filter the dashboard; other charts open their own inline tables.
@@ -34,9 +34,11 @@ The UI refresh is isolated in `src/dashboardDesign.css`, imported by `src/main.j
 - Quick compare supports independent cards, 1/2/3-column layouts, and image/PDF exports.
 - PDF, PNG, Excel, and CSV exports create real local files. Export libraries load only when needed.
 - Multiple notes, optional chart snapshots, saved insights, and filter preferences persist in browser storage.
-- Sharing mirrors In-app/WhatsApp/Teams recipient forms and saves a local draft. Embed links preserve selected chart state and toolbar controls.
+- Sharing retains In-app/WhatsApp/Teams, adds Outlook, and opens a local conversation with the selected chart attached. A floating launcher supports unread badges, per-channel threads, local drafts and explicit sample replies. No real messages are sent. Embed links preserve selected chart state and toolbar controls.
 - Insights provide Generate, prompts, and Current/Saved views. Guided RCA includes category selection, Auto RCA, YTD/QTD/MTD, a separate percentage axis, fit, and reset, using local calculations.
 - Responsive layouts, keyboard controls, dialog focus management, and empty states.
+
+See [the conversation guide](docs/conversations.md) for the preview flow, animation behavior and future backend handoff.
 
 See [the toolbar audit](docs/toolbar-audit.md) and [the interaction guide](docs/interactions.md) for the observed behavior and frontend boundaries.
 
@@ -46,7 +48,7 @@ The initial summary values reproduce the visible reference: $510.66K total sales
 
 The sixteen visible repair-order rows are copied into local fixtures. They are **not the complete 446-record production dataset**. Relationships to managers, dates, advisors, and VINs, service-sale amounts, and the parts/labor/misc split in those rows are sample metadata used to demonstrate interactions. Applying filters recalculates values from these sixteen sample rows, so filtered summaries will differ from the original platform. The remaining source chart values were visually transcribed and are approximate where the reference only showed rounded labels.
 
-The SVG charts, icons, and logo treatment are reconstructed rather than extracted production assets. The platform header, sidebar, tab strip, Edit control, and Dashboard Analyst control are omitted. Insights displays deterministic calculations; it is not connected to an AI service. Notes and preferences stay in this browser. Sharing saves local drafts, and embed links point to the running frontend; they do not publish or grant access to the original platform. Only the observed dashboard screen is replicated, not the original platform's editor, account management, or other applications.
+The SVG charts, icons, and logo treatment are reconstructed rather than extracted production assets. The platform header, sidebar, tab strip, Edit control, and Dashboard Analyst control are omitted. Insights displays deterministic calculations; it is not connected to an AI service. Notes and preferences stay in this browser. Sharing and conversations save local previews, and embed links point to the running frontend; they do not publish or grant access to the original platform. Only the observed dashboard screen is replicated, not the original platform's editor, account management, or other applications.
 
 ## Connect your backend later
 

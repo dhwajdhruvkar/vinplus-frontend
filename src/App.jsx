@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { DashboardContext } from "./components/DashboardContext.jsx";
 import { readEmbed } from "./data/embed.js";
 import Icon from "./components/Icon.jsx";
+import { ConversationWidget } from "./conversations/ConversationWidget.jsx";
 import { DashboardToolbar } from "./components/DashboardToolbar.jsx";
 import { SelectionBar } from "./components/SelectionBar.jsx";
 import { KpiCards } from "./components/KpiCards.jsx";
@@ -205,6 +206,7 @@ export default function App() {
             </div>
           </div>
         </main>
+        <ConversationWidget />
         {isFilterOpen && (
           <FilterDrawer
             filters={filters}

@@ -63,7 +63,12 @@ export function ChartDialog({
         <ChartEmbed id={id} title={title} snapshot={snapshot} />
       )}
       {kind === "share" && (
-        <ChartShare id={id} title={title} onClose={onClose} />
+        <ChartShare
+          id={id}
+          title={title}
+          snapshot={snapshot}
+          onClose={onClose}
+        />
       )}
       {kind === "notes" && (
         <ChartNotes id={id} title={title} image={noteImage} />
