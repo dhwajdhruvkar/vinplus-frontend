@@ -35,6 +35,7 @@ const paths = {
   menu: "M3 5h18M3 12h18M3 19h18",
   back: "M20 12H4M10 6l-6 6 6 6",
 };
+// Draws a local SVG icon using the requested name and size.
 export default function Icon({ name, size = 16, ...props }) {
   return (
     <svg

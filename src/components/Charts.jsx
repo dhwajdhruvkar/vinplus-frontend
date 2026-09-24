@@ -8,15 +8,17 @@ export const colors = {
   blue: "#9bbbec",
   purple: "#b689e1",
 };
+// Measures the chart container and manages its hover tooltip.
 function useChart() {
-  const ref = useRef(null),
-    [width, setWidth] = useState(500),
-    [tip, setTip] = useState(null);
+  const ref = useRef(null);
+  const [width, setWidth] = useState(500);
+  const [tip, setTip] = useState(null);
   useLayoutEffect(() => {
     const observer = new ResizeObserver(([e]) => setWidth(e.contentRect.width));
     observer.observe(ref.current);
     return () => observer.disconnect();
   }, []);
+  // Positions the tooltip near the pointer within the chart.
   const show = (event, text) => {
     const bounds = ref.current.getBoundingClientRect();
     setTip({
@@ -27,6 +29,7 @@ function useChart() {
   };
   return { ref, width, tip, show, hide: () => setTip(null) };
 }
+// Displays the hovered chart value without covering the pointer.
 function Tooltip({ tip }) {
   return (
     tip && (
@@ -40,24 +43,42 @@ function Tooltip({ tip }) {
     )
   );
 }
-function interactive(label, fn) {
+// Makes each chart mark selectable with the mouse, Enter, or Space.
+function chartButtonProps(label, onSelect) {
   return {
     role: "button",
     tabIndex: 0,
     "aria-label": label,
-    onClick: fn,
+    onClick: onSelect,
     onKeyDown: (e) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
-        fn?.();
+        onSelect?.();
       }
     },
   };
 }
-const axisText = (n) =>
-  n >= 1000 ? `${+(n / 1000).toFixed(2)} K` : +n.toFixed(2);
-const valueLabel = (n, currency) =>
-  currency ? (n >= 1000 ? compactMoney(n).replace("K", " K") : money(n)) : n;
+// Shortens large axis numbers while keeping small values readable.
+function formatAxisValue(value) {
+  if (value >= 1000) return `${Number((value / 1000).toFixed(2))} K`;
+  return Number(value.toFixed(2));
+}
+
+// Formats a chart value as either a number or a dollar amount.
+function formatChartValue(value, currency) {
+  if (!currency) return value;
+  if (value >= 1000) return compactMoney(value).replace("K", " K");
+  return money(value);
+}
+
+// Names each bar according to whether it shows dollars or record counts.
+function barLabel(key, currency) {
+  if (key === "expected")
+    return currency ? "Expected supplies" : "Total records";
+  return currency ? "Actual supplies" : "Partial recovery";
+}
+
+// Draws paired vertical bars and an optional line for unrecovered amounts.
 export function VerticalChart({
   data,
   height = 225,
@@ -68,18 +89,18 @@ export function VerticalChart({
   legends = false,
 }) {
   const { ref, width, tip, show, hide } = useChart();
-  const left = 56,
-    right = 25,
-    top = 29,
-    bottom = 45,
-    plotW = Math.max(1, width - left - right),
-    plotH = height - top - bottom;
-  const step = plotW / Math.max(data.length, 1),
-    barWidth = Math.min(line ? 64 : 57, step * 0.27);
+  const left = 56;
+  const right = 25;
+  const top = 29;
+  const bottom = 45;
+  const plotWidth = Math.max(1, width - left - right);
+  const plotHeight = height - top - bottom;
+  const step = plotWidth / Math.max(data.length, 1);
+  const barWidth = Math.min(line ? 64 : 57, step * 0.27);
   const linePoints = data
     .map(
-      (r, i) =>
-        `${left + step * (i + 0.5)},${top + plotH - ((r.expected - r.actual) / max) * plotH}`,
+      (row, i) =>
+        `${left + step * (i + 0.5)},${top + plotHeight - ((row.expected - row.actual) / max) * plotHeight}`,
     )
     .join(" ");
   return (
@@ -95,7 +116,7 @@ export function VerticalChart({
         }
       >
         {[0, 1, 2, 3].map((i) => {
-          const y = top + plotH - (i * plotH) / 3;
+          const y = top + plotHeight - (i * plotHeight) / 3;
           return (
             <g key={i}>
               <line
@@ -111,51 +132,51 @@ export function VerticalChart({
                 textAnchor="end"
                 className="axis-label"
               >
-                {axisText((max * i) / 3)}
+                {formatAxisValue((max * i) / 3)}
               </text>
             </g>
           );
         })}
-        {data.map((r, i) => {
+        {data.map((row, i) => {
           const x = left + step * (i + 0.5);
           return (
-            <g key={r.name}>
+            <g key={row.name}>
               {[
                 ["expected", colors.green],
                 ["actual", colors.yellow],
               ].map(([key, color], j) => {
-                const h = (r[key] / max) * plotH,
-                  bx = x + (j ? 5 : -barWidth - 8);
+                const barHeight = (row[key] / max) * plotHeight;
+                const barX = x + (j ? 5 : -barWidth - 8);
                 return (
                   <g
                     key={key}
-                    {...interactive(
-                      `${r.name}: ${key} ${valueLabel(r[key], currency)}`,
-                      () => onSelect?.(r.name),
+                    {...chartButtonProps(
+                      `${row.name}: ${key} ${formatChartValue(row[key], currency)}`,
+                      () => onSelect?.(row.name),
                     )}
                     onMouseMove={(e) =>
                       show(
                         e,
-                        `${r.name} · ${key === "expected" ? (currency ? "Expected supplies" : "Total records") : currency ? "Actual supplies" : "Partial recovery"}: ${valueLabel(r[key], currency)}`,
+                        `${row.name} · ${barLabel(key, currency)}: ${formatChartValue(row[key], currency)}`,
                       )
                     }
                     className="chart-mark"
                   >
                     <rect
-                      x={bx}
-                      y={top + plotH - Math.max(h, 1)}
+                      x={barX}
+                      y={top + plotHeight - Math.max(barHeight, 1)}
                       width={barWidth}
-                      height={Math.max(h, 1)}
+                      height={Math.max(barHeight, 1)}
                       rx="2"
                       fill={color}
                     />
                     <text
-                      x={bx + barWidth / 2}
-                      y={top + plotH - h - 9}
+                      x={barX + barWidth / 2}
+                      y={top + plotHeight - barHeight - 9}
                       textAnchor="middle"
                       className="data-label"
                     >
-                      {valueLabel(r[key], currency)}
+                      {formatChartValue(row[key], currency)}
                     </text>
                   </g>
                 );
@@ -166,7 +187,7 @@ export function VerticalChart({
                 textAnchor="middle"
                 className="axis-label"
               >
-                {r.name}
+                {row.name}
               </text>
             </g>
           );
@@ -179,11 +200,15 @@ export function VerticalChart({
               stroke={colors.red}
               strokeWidth="1.8"
             />
-            {data.map((r, i) => (
-              <g key={r.name}>
+            {data.map((row, i) => (
+              <g key={row.name}>
                 <circle
                   cx={left + step * (i + 0.5)}
-                  cy={top + plotH - ((r.expected - r.actual) / max) * plotH}
+                  cy={
+                    top +
+                    plotHeight -
+                    ((row.expected - row.actual) / max) * plotHeight
+                  }
                   r="3.5"
                   fill={colors.red}
                 />
@@ -191,12 +216,15 @@ export function VerticalChart({
                   <text
                     x={left + step * 0.5}
                     y={
-                      top + plotH - ((r.expected - r.actual) / max) * plotH - 10
+                      top +
+                      plotHeight -
+                      ((row.expected - row.actual) / max) * plotHeight -
+                      10
                     }
                     textAnchor="middle"
                     className="data-label"
                   >
-                    {valueLabel(r.expected - r.actual, true)}
+                    {formatChartValue(row.expected - row.actual, true)}
                   </text>
                 )}
               </g>
@@ -234,6 +262,7 @@ export function VerticalChart({
     </div>
   );
 }
+// Draws one or more horizontal bar series for each category.
 export function HorizontalChart({
   data,
   series = [{ key: "loss", color: colors.red, currency: true }],
@@ -246,14 +275,17 @@ export function HorizontalChart({
   insideLabels = false,
 }) {
   const { ref, width, tip, show, hide } = useChart();
-  const left = Math.min(labelWidth, width * 0.34),
-    right = 45,
-    top = 20,
-    bottom = 32,
-    plotW = Math.max(1, width - left - right),
-    plotH = height - top - bottom;
-  const step = plotH / Math.max(data.length, 1),
-    barH = Math.min(series.length > 1 ? 9 : 19, step / (series.length + 1.1));
+  const left = Math.min(labelWidth, width * 0.34);
+  const right = 45;
+  const top = 20;
+  const bottom = 32;
+  const plotWidth = Math.max(1, width - left - right);
+  const plotHeight = height - top - bottom;
+  const step = plotHeight / Math.max(data.length, 1);
+  const barHeight = Math.min(
+    series.length > 1 ? 9 : 19,
+    step / (series.length + 1.1),
+  );
   return (
     <div
       ref={ref}
@@ -267,7 +299,7 @@ export function HorizontalChart({
         aria-label="Shop supplies breakdown"
       >
         {Array.from({ length: ticks + 1 }, (_, i) => {
-          const x = left + (plotW * i) / ticks;
+          const x = left + (plotWidth * i) / ticks;
           return (
             <g key={i}>
               <line
@@ -283,60 +315,71 @@ export function HorizontalChart({
                 textAnchor="middle"
                 className="axis-label"
               >
-                {axisText((max * i) / ticks)}
+                {formatAxisValue((max * i) / ticks)}
               </text>
             </g>
           );
         })}
-        {data.map((r, i) => {
+        {data.map((row, i) => {
           const y = top + step * (i + 0.5);
           return (
-            <g key={r.name}>
+            <g key={row.name}>
               <text
                 x={left - 15}
                 y={y + 3}
                 textAnchor="end"
                 className="axis-label"
               >
-                {r.name}
+                {row.name}
               </text>
-              {series.map((s, j) => {
-                const value = r[s.key] || 0,
-                  visualValue = s.scale ? value * s.scale : value,
-                  w = Math.min(plotW, (visualValue / max) * plotW),
-                  by = y + (j - series.length / 2) * (barH + 4);
+              {series.map((seriesItem, j) => {
+                const value = row[seriesItem.key] || 0;
+                const visualValue = seriesItem.scale
+                  ? value * seriesItem.scale
+                  : value;
+                const barWidth = Math.min(
+                  plotWidth,
+                  (visualValue / max) * plotWidth,
+                );
+                const barY = y + (j - series.length / 2) * (barHeight + 4);
                 return (
                   <g
-                    key={s.key}
+                    key={seriesItem.key}
                     className="chart-mark"
-                    {...interactive(
-                      `${r.name}: ${s.key} ${valueLabel(value, s.currency)}`,
-                      () => onSelect?.(r.name),
+                    {...chartButtonProps(
+                      `${row.name}: ${seriesItem.key} ${formatChartValue(value, seriesItem.currency)}`,
+                      () => onSelect?.(row.name),
                     )}
                     onMouseMove={(e) =>
                       show(
                         e,
-                        `${r.name} · ${s.label || s.key}: ${valueLabel(value, s.currency)}`,
+                        `${row.name} · ${seriesItem.label || seriesItem.key}: ${formatChartValue(value, seriesItem.currency)}`,
                       )
                     }
                   >
                     <rect
                       x={left}
-                      y={by}
-                      width={Math.max(w, 1)}
-                      height={barH}
+                      y={barY}
+                      width={Math.max(barWidth, 1)}
+                      height={barHeight}
                       rx="2"
-                      fill={s.color}
+                      fill={seriesItem.color}
                     />
                     <text
-                      x={left + w + (insideLabels && w > plotW * 0.8 ? -5 : 8)}
-                      y={by + barH - 1}
+                      x={
+                        left +
+                        barWidth +
+                        (insideLabels && barWidth > plotWidth * 0.8 ? -5 : 8)
+                      }
+                      y={barY + barHeight - 1}
                       textAnchor={
-                        insideLabels && w > plotW * 0.8 ? "end" : "start"
+                        insideLabels && barWidth > plotWidth * 0.8
+                          ? "end"
+                          : "start"
                       }
                       className="data-label"
                     >
-                      {valueLabel(value, s.currency)}
+                      {formatChartValue(value, seriesItem.currency)}
                     </text>
                   </g>
                 );
@@ -364,12 +407,13 @@ export function HorizontalChart({
     </div>
   );
 }
+// Shows the reference sales mix as four labeled donut segments.
 export function DonutChart({ onSelect }) {
   const { ref, width, tip, show, hide } = useChart();
-  const cx = width / 2,
-    cy = 120,
-    r = 65,
-    inner = 29;
+  const cx = width / 2;
+  const cy = 120;
+  const outerRadius = 65;
+  const innerRadius = 29;
   const segments = [
     {
       name: "Misc Sales",
@@ -396,19 +440,25 @@ export function DonutChart({ onSelect }) {
       text: "$8.38 K (1.4%)",
     },
   ];
+
+  // Converts an angle and radius into a point around the donut's center.
+  function pointOnCircle(radius, angle) {
+    return [cx + radius * Math.cos(angle), cy + radius * Math.sin(angle)];
+  }
+
   let angle = -Math.PI / 2;
   const arcs = segments.map((segment) => {
     const start = angle;
     angle += (segment.value / 100) * Math.PI * 2;
     const end = angle;
-    const polar = (rad, a) => [cx + rad * Math.cos(a), cy + rad * Math.sin(a)];
-    const a = polar(r, start),
-      b = polar(r, end),
-      c = polar(inner, end),
-      d = polar(inner, start);
+    const outerStart = pointOnCircle(outerRadius, start);
+    const outerEnd = pointOnCircle(outerRadius, end);
+    const innerEnd = pointOnCircle(innerRadius, end);
+    const innerStart = pointOnCircle(innerRadius, start);
+    const largeArc = end - start > Math.PI ? 1 : 0;
     return {
       ...segment,
-      path: `M${a} A${r},${r} 0 ${end - start > Math.PI ? 1 : 0} 1 ${b} L${c} A${inner},${inner} 0 ${end - start > Math.PI ? 1 : 0} 0 ${d} Z`,
+      path: `M${outerStart} A${outerRadius},${outerRadius} 0 ${largeArc} 1 ${outerEnd} L${innerEnd} A${innerRadius},${innerRadius} 0 ${largeArc} 0 ${innerStart} Z`,
     };
   });
   return (
@@ -419,16 +469,18 @@ export function DonutChart({ onSelect }) {
         role="group"
         aria-label="Sales metrics breakdown: Labor 47.8%, Parts 35.8%, Misc 15%, Shop supplies 1.4%"
       >
-        {arcs.map((s, i) => (
+        {arcs.map((segment) => (
           <path
-            key={s.name}
-            d={s.path}
-            fill={s.color}
+            key={segment.name}
+            d={segment.path}
+            fill={segment.color}
             stroke="white"
             strokeWidth="1"
             className="chart-mark"
-            {...interactive(`${s.name} ${s.text}`, () => onSelect?.(s.name))}
-            onMouseMove={(e) => show(e, `${s.name}: ${s.text}`)}
+            {...chartButtonProps(`${segment.name} ${segment.text}`, () =>
+              onSelect?.(segment.name),
+            )}
+            onMouseMove={(e) => show(e, `${segment.name}: ${segment.text}`)}
           />
         ))}
         <g className="data-label donut-label">
@@ -466,6 +518,7 @@ export function DonutChart({ onSelect }) {
     </div>
   );
 }
+// Shows the monthly unrecovered amount for the available reporting period.
 export function TrendChart({ value, onSelect }) {
   const { ref, width, tip, show, hide } = useChart();
   const x = width / 2;
@@ -480,14 +533,14 @@ export function TrendChart({ value, onSelect }) {
         <line x1="65" x2={width - 25} y1="35" y2="35" className="grid-line" />
         <line x1="65" x2={width - 25} y1="138" y2="138" className="axis-line" />
         <text x="49" y="39" textAnchor="end" className="axis-label">
-          {axisText(value + 1)}
+          {formatAxisValue(value + 1)}
         </text>
         <text x="49" y="141" textAnchor="end" className="axis-label">
-          {axisText(value)}
+          {formatAxisValue(value)}
         </text>
         <g
           className="chart-mark"
-          {...interactive(`February 2024: ${money(value)}`, onSelect)}
+          {...chartButtonProps(`February 2024: ${money(value)}`, onSelect)}
           onMouseMove={(e) => show(e, `February 2024 · ${money(value)}`)}
         >
           <circle cx={x} cy="97" r="4" fill={colors.red} />

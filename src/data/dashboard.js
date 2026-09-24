@@ -100,32 +100,46 @@ export const referenceAdvisor = advisors.map((name, i) => ({
   count: [70, 45, 40, 41, 45, 26][i],
   loss: [4530, 4060, 3500, 2700, 2600, 1890][i],
 }));
-export const money = (n) =>
-  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(
-    Number(n) || 0,
-  );
-export const compactMoney = (n) =>
-  Math.abs(n) >= 1000 ? `$${(n / 1000).toFixed(2)}K` : money(n);
-export const dateLabel = (value) =>
-  value
-    ? `${value.slice(5, 7)}-${value.slice(8, 10)}-${value.slice(0, 4)}`
-    : "All dates";
+const currencyFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
+
+// Formats an amount as US dollars, including cents.
+export function money(amount) {
+  return currencyFormatter.format(Number(amount) || 0);
+}
+
+// Shortens large dollar amounts for cards and chart labels.
+export function compactMoney(amount) {
+  if (Math.abs(amount) >= 1000) return `$${(amount / 1000).toFixed(2)}K`;
+  return money(amount);
+}
+
+// Converts an ISO date into the month-day-year label used on this page.
+export function dateLabel(value) {
+  if (!value) return "All dates";
+  return `${value.slice(5, 7)}-${value.slice(8, 10)}-${value.slice(0, 4)}`;
+}
+
+// Checks whether any selection differs from the original dashboard filters.
 export function isFiltered(filters) {
   return Object.keys(defaultFilters).some(
     (key) => filters[key] !== defaultFilters[key],
   );
 }
-export function filterRecords(rows, f) {
-  const query = f.query.trim().toLowerCase();
+// Keeps rows that match every active filter and the optional search text.
+export function filterRecords(rows, filters) {
+  const query = filters.query.trim().toLowerCase();
   return rows.filter(
     (row) =>
-      (!f.from || row.date >= f.from) &&
-      (!f.to || row.date <= f.to) &&
-      (!f.manager || row.manager === f.manager) &&
-      (!f.advisor || row.advisor === f.advisor) &&
-      (!f.status || row.status === f.status) &&
-      (!f.vin || row.vin === f.vin) &&
-      (!f.ro || row.ro === f.ro) &&
+      (!filters.from || row.date >= filters.from) &&
+      (!filters.to || row.date <= filters.to) &&
+      (!filters.manager || row.manager === filters.manager) &&
+      (!filters.advisor || row.advisor === filters.advisor) &&
+      (!filters.status || row.status === filters.status) &&
+      (!filters.vin || row.vin === filters.vin) &&
+      (!filters.ro || row.ro === filters.ro) &&
       (!query ||
         [
           row.ro,
@@ -135,15 +149,16 @@ export function filterRecords(rows, f) {
           row.manager,
           row.advisor,
           row.vin,
-        ].some((v) => v.toLowerCase().includes(query))),
+        ].some((value) => value.toLowerCase().includes(query))),
   );
 }
+// Calculates the totals and recovery percentages displayed in the summary cards.
 export function summarize(rows) {
-  const expected = rows.reduce((sum, r) => sum + r.expected, 0),
-    actual = rows.reduce((sum, r) => sum + r.actual, 0);
-  const partial = rows.filter((r) => r.loss > 0).length;
+  const expected = rows.reduce((sum, row) => sum + row.expected, 0);
+  const actual = rows.reduce((sum, row) => sum + row.actual, 0);
+  const partial = rows.filter((row) => row.loss > 0).length;
   return {
-    sales: rows.reduce((sum, r) => sum + r.serviceSales, 0),
+    sales: rows.reduce((sum, row) => sum + row.serviceSales, 0),
     expected,
     actual,
     loss: expected - actual,
@@ -153,11 +168,13 @@ export function summarize(rows) {
     recovery: expected ? (actual / expected) * 100 : 0,
   };
 }
+// Groups records by a field and adds the amounts and counts needed by charts.
 export function groupRecords(rows, key) {
-  return Object.values(
-    rows.reduce((all, row) => {
-      const name = row[key] || "(Blank)";
-      all[name] ||= {
+  const groups = Object.create(null);
+  for (const row of rows) {
+    const name = row[key] || "(Blank)";
+    if (!groups[name]) {
+      groups[name] = {
         name,
         expected: 0,
         actual: 0,
@@ -167,33 +184,40 @@ export function groupRecords(rows, key) {
         count: 0,
         sales: 0,
       };
-      const group = all[name];
-      group.expected += row.expected;
-      group.actual += row.actual;
-      group.loss += row.loss;
-      group.sales += row.serviceSales;
-      group.total++;
-      group.count++;
-      if (row.loss > 0) group.partial++;
-      return all;
-    }, {}),
-  );
+    }
+    const group = groups[name];
+    group.expected += row.expected;
+    group.actual += row.actual;
+    group.loss += row.loss;
+    group.sales += row.serviceSales;
+    group.total++;
+    group.count++;
+    if (row.loss > 0) group.partial++;
+  }
+  return Object.values(groups);
 }
+
+// Picks the matching daily value for the summary card the user selected.
+function metricValue(group, title) {
+  switch (title) {
+    case "Total Sales":
+      return group.sales;
+    case "Shop Supplies Partial Recovery":
+      return group.partial;
+    case "Partial Recovery %":
+      return group.total ? (group.partial / group.total) * 100 : 0;
+    case "Shop Supplies Recovery Status":
+      return group.actual;
+    default:
+      return group.loss;
+  }
+}
+
+// Builds one chart entry per date for a summary-card drill-down.
 export function dailyMetrics(rows, title) {
   return groupRecords(rows, "date").map((row) => ({
     ...row,
-    metric:
-      title === "Total Sales"
-        ? row.sales
-        : title === "Shop Supplies Partial Recovery"
-          ? row.partial
-          : title === "Partial Recovery %"
-            ? row.total
-              ? (row.partial / row.total) * 100
-              : 0
-            : title === "Shop Supplies Recovery Status"
-              ? row.actual
-              : row.loss,
+    metric: metricValue(row, title),
   }));
 }
 export const tableColumns = [
@@ -207,24 +231,30 @@ export const tableColumns = [
   ["loss", "Unrecovered Shop Supplies"],
   ["percent", "Unrecovered %"],
 ];
+// Uses the source percentage when supplied, otherwise calculates it from amounts.
+export function unrecoveredPercent(row) {
+  if (row.percent !== undefined && row.percent !== null) return row.percent;
+  return row.expected ? (row.loss / row.expected) * 100 : 0;
+}
+
+// Quotes a CSV cell and prevents text from being read as a spreadsheet formula.
+function csvCell(value) {
+  const escaped = String(value)
+    .replace(/^[=+@-]/, "'$&")
+    .replaceAll('"', '""');
+  return `"${escaped}"`;
+}
+
+// Exports the table columns and rows with the same displayed percentages.
 export function toCSV(rows) {
-  const cell = (value) =>
-    '"' +
-    String(value)
-      .replace(/^[=+@-]/, "'$&")
-      .replaceAll('"', '""') +
-    '"';
   return [
-    tableColumns.map((c) => cell(c[1])).join(","),
+    tableColumns.map(([, label]) => csvCell(label)).join(","),
     ...rows.map((row) =>
       tableColumns
         .map(([key]) =>
-          cell(
+          csvCell(
             key === "percent"
-              ? (
-                  row.percent ??
-                  (row.expected ? (row.loss / row.expected) * 100 : 0)
-                ).toFixed(2) + "%"
+              ? unrecoveredPercent(row).toFixed(2) + "%"
               : row[key],
           ),
         )
