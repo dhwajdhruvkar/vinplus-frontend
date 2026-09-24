@@ -1,6 +1,6 @@
 # Shop Supplies dashboard — React + Vite
 
-A frontend recreation of the **Shop Supplies Analysiss** dashboard inspected in Chrome. Includes the navigation shell, five KPI cards, dealer charts, sales donut, manager performance, advisor performance, monthly trend, VIN charts, filter drawer, and repair-order table.
+A frontend recreation of the **Shop Supplies Analysiss** dashboard inspected in Chrome. The standalone dashboard fills the viewport and includes five KPI cards, dealer charts, sales donut, manager performance, advisor performance, monthly trend, VIN charts, filter drawer, and repair-order table.
 
 ## Run
 
@@ -23,12 +23,11 @@ The `dist/` folder can be served by any static web host. This project has no ser
 ## What works
 
 - Date, manager, advisor, status, VIN, and repair-order filtering.
-- Search by repair order, vehicle, dealer, advisor, or manager.
 - Sortable, scrollable repair-order table with record detail dialogs.
 - Chart bar drill-downs, daily summaries, hover values, and chart expansion.
 - CSV export of the current table selection.
 - Saved filter preferences in browser local storage.
-- Reset, chart visibility editing, larger KPI view, and dashboard summary panel.
+- Reset, larger KPI view, and dashboard insights.
 - Responsive layouts, keyboard controls, dialog focus management, and empty states.
 
 ## Reference fidelity and sample data
@@ -37,7 +36,7 @@ The initial summary values reproduce the visible reference: $510.66K total sales
 
 The sixteen visible repair-order rows are copied into local fixtures. They are **not the complete 446-record production dataset**. Relationships to managers, dates, advisors, and VINs, and service-sale amounts in those rows, are sample metadata used to demonstrate interactions. Applying filters recalculates values from these sixteen sample rows, so filtered summaries will differ from the original platform. The remaining source chart values were visually transcribed and are approximate where the reference only showed rounded labels.
 
-The SVG charts, icons, and logo treatment are reconstructed rather than extracted production assets. Peripheral app panels are local placeholders. Dashboard Analyst displays a deterministic summary; it is not connected to an AI service. Only the observed dashboard screen is replicated, not the original platform's editor, account management, or other applications.
+The SVG charts, icons, and logo treatment are reconstructed rather than extracted production assets. The platform header, sidebar, tab strip, Edit control, and Dashboard Analyst control are omitted. Insights displays a deterministic summary; it is not connected to an AI service. Only the observed dashboard screen is replicated, not the original platform's editor, account management, or other applications.
 
 ## Connect your backend later
 
