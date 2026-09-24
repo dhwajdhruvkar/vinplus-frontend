@@ -129,7 +129,7 @@ export function DashboardChart({
         ) * 1.15
       : config.max || Math.max(1, summary.loss * 1.15);
     if (
-      type === "area" ||
+      ["area", "line", "lollipop"].includes(type) ||
       (type === "column" && !["dealerOrders", "manager"].includes(id))
     )
       return (
@@ -178,6 +178,7 @@ export function DashboardChart({
     <ChartPanel
       id={id}
       title={title}
+      defaultType={config.type === "trend" ? "line" : config.type}
       crumbs={config.crumbs}
       level={level}
       className={id === "manager" ? "manager-panel" : ""}
@@ -202,7 +203,9 @@ export function DashboardChart({
               ]
             : chartColumns
       }
-      fields={config.series.map(([key, label]) => [key, label])}
+      fields={
+        config.sortFields || config.series.map(([key, label]) => [key, label])
+      }
       allowTypes={config.type !== "donut"}
       description={
         config.crumbs

@@ -2,8 +2,14 @@ import React, { useId } from "react";
 import { colors } from "./Charts.jsx";
 import { compactMoney } from "../data/dashboard.js";
 
-// Draws alternate column or area views while preserving the same selection action.
-export function SeriesChart({ data, series, type, onSelect, height = 225 }) {
+// Draws column, area, line, and lollipop views with the same chart selections.
+export function SeriesChart({
+  data,
+  series,
+  type,
+  onSelect = () => {},
+  height = 225,
+}) {
   const id = useId();
   const width = 600,
     left = 55,
@@ -63,13 +69,15 @@ export function SeriesChart({ data, series, type, onSelect, height = 225 }) {
           ]);
           return (
             <g key={item.key}>
-              {type === "area" && points.length > 0 && (
+              {["area", "line"].includes(type) && points.length > 0 && (
                 <>
-                  <path
-                    d={`M${points[0][0]},${height - bottom} ${points.map((point) => `L${point}`).join(" ")} L${points.at(-1)[0]},${height - bottom} Z`}
-                    fill={item.color}
-                    opacity=".5"
-                  />
+                  {type === "area" && (
+                    <path
+                      d={`M${points[0][0]},${height - bottom} ${points.map((point) => `L${point}`).join(" ")} L${points.at(-1)[0]},${height - bottom} Z`}
+                      fill={item.color}
+                      opacity=".5"
+                    />
+                  )}
                   <polyline
                     points={points.map((point) => point.join(",")).join(" ")}
                     fill="none"
@@ -96,8 +104,18 @@ export function SeriesChart({ data, series, type, onSelect, height = 225 }) {
                   <title id={`${id}-${seriesIndex}-${index}`}>
                     {row.name} · {item.label}: {label(row[item.key] || 0, item)}
                   </title>
-                  {type === "area" ? (
+                  {type !== "column" ? (
                     <>
+                      {type === "lollipop" && (
+                        <line
+                          x1={points[index][0]}
+                          x2={points[index][0]}
+                          y1={height - bottom}
+                          y2={points[index][1]}
+                          stroke={item.color}
+                          strokeWidth="1.5"
+                        />
+                      )}
                       <circle
                         cx={points[index][0]}
                         cy={points[index][1]}
@@ -110,6 +128,14 @@ export function SeriesChart({ data, series, type, onSelect, height = 225 }) {
                         r="14"
                         fill="transparent"
                       />
+                      <text
+                        x={points[index][0]}
+                        y={points[index][1] - 10}
+                        textAnchor="middle"
+                        className="value-label"
+                      >
+                        {label(row[item.key] || 0, item)}
+                      </text>
                     </>
                   ) : (
                     <rect
@@ -138,8 +164,13 @@ export function SeriesChart({ data, series, type, onSelect, height = 225 }) {
             y={height - 20}
             textAnchor="middle"
             className="axis-label"
+            transform={
+              row.name.length > 12
+                ? `rotate(-40 ${left + step * (index + 0.5)} ${height - 20})`
+                : undefined
+            }
           >
-            {row.name}
+            {row.name.length > 12 ? `${row.name.slice(0, 10)}…` : row.name}
           </text>
         ))}
         {!data.length && (

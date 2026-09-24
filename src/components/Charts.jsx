@@ -597,7 +597,7 @@ export function HorizontalChart({
 
 // Highlights sales slices independently without changing dashboard filters.
 
-export function DonutChart({ rows = [], filtered = false }) {
+export function DonutChart({ rows = [], filtered = false, onSelect }) {
   const { ref, width, tip, show, hide } = useChart(rows);
 
   const [selected, setSelected] = useState([]);
@@ -649,6 +649,7 @@ export function DonutChart({ rows = [], filtered = false }) {
   // Toggles just the clicked slice, matching the original donut behavior.
 
   function toggleSlice(name) {
+    onSelect?.(name);
     setSelected((current) =>
       current.includes(name)
         ? current.filter((item) => item !== name)

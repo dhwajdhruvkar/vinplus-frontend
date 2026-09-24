@@ -80,6 +80,11 @@ export const panels = {
     currency: true,
     series: [["loss", "Unrecovered Shop Supplies", "red"]],
     max: 125,
+    sortFields: [["loss", "Total Ideal Cost by VIN"]],
+    tableColumns: [
+      ["name", "Unrecovered S S"],
+      ["loss", "Total Ideal Cost By VIN", "integer"],
+    ],
   },
   recurring: {
     title: "Recurring Shop Supplies Shortfall by Vehicle",

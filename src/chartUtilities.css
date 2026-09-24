@@ -1,0 +1,1000 @@
+/* Chart menus match the compact source toolbar and keep every action reachable. */
+.chart-menu {
+  padding: 0;
+  width: 212px;
+  font-size: 13px;
+}
+.chart-menu > button {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 14px;
+}
+.chart-menu > button > svg {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+}
+.chart-menu .submenu-arrow {
+  margin-left: auto;
+  transform: rotate(-90deg);
+}
+.chart-menu-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 15px;
+  background: #f7f9fb;
+  border-bottom: 1px solid #e4e8ed;
+  color: #252a31;
+}
+.chart-menu-heading button {
+  display: flex;
+  color: #7a899b;
+}
+.chart-menu.type-menu {
+  width: 234px;
+}
+.chart-type-options {
+  display: flex;
+  padding: 10px 14px;
+  gap: 1px;
+}
+.chart-type-options button {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 42px;
+}
+.chart-type-options button:hover,
+.chart-type-options [aria-pressed="true"] {
+  background: #e4f5fc;
+}
+.chart-menu.info-menu {
+  width: 216px;
+  color: #111;
+  font-size: 12px;
+}
+.chart-menu.info-menu p {
+  margin: 0;
+  padding: 12px 15px;
+}
+.sort-menu-body {
+  padding: 10px 12px 2px;
+}
+.sort-menu select {
+  font-size: 12px;
+  color: #697780;
+  border-radius: 3px;
+}
+.sort-menu label {
+  margin: 7px 0;
+}
+.chart-menu .menu-footer {
+  margin: 5px 0 0;
+  padding: 7px 12px;
+  background: #f7f9fb;
+}
+.chart-menu .menu-footer button {
+  border-radius: 3px;
+  font-size: 11px;
+}
+.chart-menu .export-back {
+  border-bottom: 1px solid #e4e8ed;
+}
+button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+.hide-panel-title > .panel-header > h2 {
+  visibility: hidden;
+}
+.outline-button {
+  color: #3188c5;
+  border: 1px solid #3188c5;
+  padding: 7px 12px;
+  border-radius: 3px;
+  background: #fff;
+}
+
+/* Dialog variants preserve one focus-managed shell with source-specific layouts. */
+.modal-heading {
+  flex: 1;
+  min-width: 0;
+}
+.modal-heading p {
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 4px 0 0;
+  color: #707880;
+}
+.modal-share {
+  width: 500px;
+}
+.modal-share > header,
+.modal-embed > header {
+  background: #f2f5f5;
+}
+.modal-share .modal-body,
+.modal-embed .modal-body {
+  padding: 0;
+}
+.modal.modal-table {
+  width: min(920px, 90vw);
+}
+.modal-table .modal-body {
+  padding: 0 24px 20px;
+}
+.modal-table .detail-table-scroll {
+  margin: 0;
+  max-height: 54vh;
+  border: 1px solid #bec8cf;
+}
+.modal-table .detail-table th,
+.modal-table .detail-table th button {
+  background: #f5f7f7;
+  color: #657079;
+  font-weight: 400;
+}
+.modal-table .detail-table th button {
+  padding: 9px 12px;
+}
+.modal-table .detail-table td button {
+  padding: 6px 12px;
+}
+.modal-table .detail-table tr:nth-child(even) {
+  background: #f8fbfc;
+}
+.modal-table .detail-table td.numeric {
+  text-align: left;
+}
+.modal-embed {
+  width: 680px;
+}
+.backdrop-drawer {
+  justify-content: flex-end;
+  padding: 0;
+}
+.modal-drawer {
+  position: relative;
+  width: 80vw;
+  max-width: none;
+  height: 100vh;
+  max-height: 100vh;
+  border-radius: 5px 0 0 5px;
+  display: flex;
+  flex-direction: column;
+}
+.modal-drawer > header {
+  height: 44px;
+  min-height: 44px;
+  padding: 0 16px;
+}
+.modal-drawer > header h2 {
+  font-size: 13px;
+  font-weight: 400;
+  color: #278dc6;
+}
+.modal-drawer .modal-body {
+  padding: 12px;
+  overflow: auto;
+  flex: 1;
+}
+.modal-drawer:has(.chart-insights) > header h2 {
+  visibility: hidden;
+}
+.modal-drawer:has(.chart-insights) .modal-body {
+  padding-top: 8px;
+}
+.backdrop-page {
+  padding: 0;
+  background: #f1f4f8;
+}
+.modal-page {
+  width: 100vw;
+  max-width: none;
+  height: 100vh;
+  max-height: 100vh;
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+}
+.modal-page > header {
+  gap: 12px;
+}
+.modal-page .modal-heading h2 {
+  font-size: 17px;
+  font-weight: 400;
+}
+.modal-page .modal-heading p {
+  color: #2463b6;
+  font-size: 16px;
+}
+.modal-page .modal-body {
+  background: #f1f4f8;
+  overflow: auto;
+  flex: 1;
+}
+.dialog-footer {
+  background: #f0f3f4;
+  padding: 11px 20px;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.dialog-footer button {
+  padding: 7px 10px;
+  border-radius: 3px;
+}
+
+/* Embed settings are applied to the generated chart URL. */
+.chart-embed > p {
+  padding: 0 23px;
+  margin: 14px 0 10px;
+  font-size: 13px;
+  color: #596776;
+}
+.embed-types {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 0 23px 18px;
+  gap: 12px;
+}
+.embed-types button {
+  text-align: left;
+  border: 1px solid #dfe5e9;
+  border-radius: 3px;
+  padding: 12px 18px;
+  font-size: 12px;
+}
+.embed-types strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+.embed-types span {
+  display: block;
+  line-height: 1.4;
+  color: #818a94;
+}
+.embed-types [aria-checked="true"] {
+  background: #edf5fd;
+  border-color: #aac9e5;
+}
+.embed-section-title {
+  border-top: 1px solid #e4e8eb;
+  border-bottom: 1px solid #e4e8eb;
+  padding: 14px 18px;
+  font-size: 14px;
+}
+.embed-checks {
+  padding: 8px 22px;
+  height: 154px;
+  overflow: auto;
+}
+.embed-checks label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 0 0 11px;
+  font-size: 13px;
+  color: #687580;
+}
+.embed-checks label:has(input:disabled) {
+  color: #a6acb1;
+}
+.chart-embed .dialog-footer {
+  justify-content: flex-start;
+  background: white;
+  border-top: 1px solid #edf0f2;
+  padding: 11px 15px;
+}
+.chart-embed .embed-content {
+  padding: 10px 22px 20px;
+  border-top: 1px solid #e0e6eb;
+}
+.embed-content label {
+  display: block;
+  font-size: 12px;
+}
+.embed-content input,
+.embed-content textarea {
+  font: 11px/1.5 monospace;
+}
+.embed-content > button {
+  margin-right: 10px;
+  padding: 7px 10px;
+}
+
+/* Sharing uses the same form structure, with local sample recipient choices. */
+.chart-share {
+  padding-top: 18px;
+  font-size: 12px;
+}
+.chart-share > strong,
+.chart-share > p,
+.share-comment {
+  display: block;
+  margin: 0 24px 8px;
+}
+.sharing-platforms {
+  display: flex;
+  gap: 5px;
+  margin: 0 24px 14px;
+}
+.sharing-platforms label {
+  background: #eff1fc;
+  padding: 9px 10px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.share-recipient-group {
+  background: #f7f7f7;
+  padding: 10px 7px;
+  margin: 12px 24px;
+  border-radius: 8px;
+}
+.recipient-picker {
+  position: relative;
+}
+.recipient-picker label {
+  display: block;
+}
+.recipient-input {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 10px;
+  background: white;
+  border: 1px solid #d2d9de;
+  border-radius: 3px;
+  min-height: 33px;
+  padding: 3px 6px;
+}
+.recipient-input input {
+  flex: 1;
+  min-width: 180px;
+  border: 0;
+  outline: none;
+  font: inherit;
+  padding: 3px;
+}
+.recipient-input input::placeholder {
+  color: #a4adb7;
+}
+.recipient-input > span {
+  background: #e9f4fc;
+  padding: 3px 5px;
+  font-size: 11px;
+}
+.recipient-input > span button {
+  padding-left: 6px;
+}
+.recipient-options {
+  position: absolute;
+  z-index: 5;
+  left: 0;
+  right: 0;
+  max-height: 160px;
+  overflow: auto;
+  background: white;
+  border: 1px solid #d7dfe6;
+  box-shadow: 0 4px 10px #0002;
+}
+.recipient-options button {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  text-align: left;
+}
+.recipient-options button:hover {
+  background: #eaf5fc;
+}
+.share-info {
+  background: #e4f8ff;
+  padding: 10px;
+  line-height: 1.5;
+  margin: 7px 0 0;
+  font-size: 11px;
+}
+.share-comment {
+  margin-top: 17px;
+}
+.share-comment span {
+  color: #737b82;
+}
+.share-comment textarea {
+  display: block;
+  width: 100%;
+  min-height: 54px;
+  border: 1px solid #ccd4db;
+  border-radius: 4px;
+  margin-top: 7px;
+  padding: 8px 12px;
+  font: inherit;
+}
+.share-boundary {
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+/* Notes keep the saved chart on the left and their editor and list on the right. */
+.notes-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  color: #8090a0;
+  text-align: center;
+  padding: 20px;
+}
+.notes-empty > svg {
+  color: #9cabbc;
+  margin: 20px;
+}
+.notes-empty h3 {
+  font-size: 23px;
+  margin: 10px 0;
+  font-weight: 400;
+}
+.notes-empty p {
+  margin: 0 0 22px;
+  font-size: 13px;
+}
+.notes-layout {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  min-height: calc(100vh - 75px);
+}
+.note-reference {
+  min-width: 0;
+  padding: 15px;
+}
+.note-reference > .notes-empty {
+  height: 100%;
+}
+.note-reference img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+.note-reference h3 {
+  font-size: 14px;
+}
+.note-reference p {
+  color: #8792a0;
+  font-size: 11px;
+}
+.notes-list {
+  background: #f1f4f9;
+  border-left: 1px solid #e0e6ee;
+  min-width: 0;
+}
+.notes-list > header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 12px;
+  background: white;
+  font-size: 13px;
+  color: #677582;
+}
+.notes-list > header button {
+  color: #2787c8;
+}
+.note-editor {
+  padding: 12px;
+}
+.note-editor textarea {
+  width: 100%;
+  min-height: 74px;
+  padding: 8px;
+  border: 1px solid #78aef2;
+  border-radius: 3px;
+  font: inherit;
+  font-size: 13px;
+}
+.note-editor label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  margin: 10px 0;
+}
+.note-editor > div {
+  display: flex;
+  gap: 4px;
+}
+.note-editor > div button {
+  display: grid;
+  place-items: center;
+  padding: 7px;
+  border: 1px solid #d5dde7;
+}
+.notes-list article {
+  margin: 10px;
+  border: 1px solid #dde4ed;
+  background: white;
+  border-radius: 4px;
+}
+.notes-list article.selected-note {
+  border-color: #5ea4de;
+}
+.note-content {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  text-align: left;
+}
+.note-content p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  margin: 0 0 8px;
+}
+.note-content small {
+  color: #8793a1;
+}
+.note-content span {
+  display: block;
+  color: #3487be;
+  font-size: 11px;
+  margin-top: 8px;
+}
+.note-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 4px 12px 8px;
+  font-size: 11px;
+  color: #64798f;
+}
+.notes-list > p {
+  margin: 10px;
+  font-size: 12px;
+}
+
+/* Comparisons use one, two, or three columns and export every card. */
+.comparison-grid {
+  grid-template-columns: repeat(var(--compare-columns, 3), minmax(0, 1fr));
+  gap: 12px;
+}
+.compare-actions select {
+  border: 1px solid #cdd8e3;
+  padding: 8px;
+  border-radius: 3px;
+  color: #667582;
+  background: white;
+}
+.compare-export {
+  position: relative;
+  margin-right: auto;
+}
+.compare-export > button {
+  padding: 8px 16px;
+}
+.compare-export-menu {
+  position: absolute;
+  top: 35px;
+  left: 0;
+  z-index: 5;
+  width: 100px;
+  background: white;
+  box-shadow: 0 3px 12px #0002;
+}
+.compare-export-menu button {
+  display: block;
+  padding: 10px 14px;
+  width: 100%;
+  text-align: left;
+}
+.comparison-card > footer {
+  min-height: 100px;
+}
+.comparison-card .chart-canvas {
+  overflow: auto;
+}
+
+/* Insights use source-style tabs, a chart column, and a persistent result panel. */
+.chart-insights > .insight-tabs {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 44px;
+  margin: 0;
+  padding: 0 12px;
+  gap: 20px;
+  border: 0;
+}
+.chart-insights .selection-bar {
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
+.insight-columns {
+  grid-template-columns: 1.5fr 1fr;
+  gap: 0;
+  min-height: calc(100vh - 150px);
+  border: 1px solid #e3e8ed;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.insight-chart {
+  padding: 16px;
+  overflow: auto;
+}
+.insight-chart > h3 {
+  font-size: 14px;
+  margin: 0 0 15px;
+}
+.insight-chart .breadcrumbs {
+  padding: 0;
+  margin-bottom: 8px;
+}
+.insight-chart .chart-canvas {
+  margin: 16px 0;
+}
+.insight-results {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border-left: 1px solid #dce3eb;
+  min-width: 0;
+}
+.insight-results > header {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 10px;
+  font-size: 14px;
+  color: #5e6f7b;
+}
+.insight-results > header label {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  font-size: 11px;
+  color: #354553;
+}
+input[role="switch"] {
+  appearance: none;
+  width: 32px;
+  height: 17px;
+  border-radius: 10px;
+  background: #c4c9ce;
+  position: relative;
+  cursor: pointer;
+}
+input[role="switch"]::after {
+  content: "";
+  display: block;
+  width: 15px;
+  height: 15px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  box-shadow: 0 1px 3px #0003;
+}
+input[role="switch"]:checked {
+  background: #66a6e9;
+}
+input[role="switch"]:checked::after {
+  left: 16px;
+}
+.insight-output {
+  padding: 14px 28px;
+  flex: 1;
+  min-height: 330px;
+}
+.insight-output h3 {
+  font-size: 26px;
+  line-height: 1.3;
+  font-weight: 500;
+  margin: 20px 0 30px;
+}
+.insight-output > p {
+  font-size: 13px;
+  line-height: 1.8;
+  color: #797f85;
+  margin-bottom: 40px;
+}
+.ai-illustration {
+  margin: 75px auto 20px;
+  width: 155px;
+  height: 95px;
+  display: grid;
+  place-items: center;
+  color: #93e0eb;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 12px, #eafafb 12px 13px),
+    repeating-linear-gradient(90deg, transparent 0 12px, #eafafb 12px 13px);
+  transform: rotate(-25deg) skew(20deg);
+  opacity: 0.55;
+}
+.ai-illustration span {
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 50px;
+  background: #d2f7f9;
+  border: 7px double white;
+  font-size: 25px;
+}
+.insight-prompt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 9px;
+  margin: 9px;
+  border: 1px solid #a9ccef;
+  border-radius: 5px;
+  color: #53afb5;
+}
+.insight-prompt input {
+  min-width: 0;
+  flex: 1;
+  border: none;
+  outline: none;
+  font: inherit;
+  font-size: 11px;
+}
+.insight-prompt button {
+  display: grid;
+  place-items: center;
+  color: white;
+  background: #78acf2;
+  padding: 5px;
+}
+.insight-boundary {
+  font-size: 10px;
+  padding: 0 10px 8px;
+  margin: 0;
+  color: #687d87;
+}
+.insight-results > [role="status"] {
+  padding: 0 12px;
+  font-size: 12px;
+}
+.finding-list {
+  font-size: 13px;
+  line-height: 1.5;
+}
+.finding-list ul {
+  padding-left: 18px;
+}
+.finding-list small {
+  display: block;
+  color: #8c969d;
+  margin: 15px 0;
+}
+.insight-output article {
+  border-bottom: 1px solid #e1e6eb;
+  margin-bottom: 18px;
+}
+.analysis-controls {
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.rca-instruction {
+  font-size: 11px;
+  background: #f0faff;
+  color: #2686a2;
+  padding: 5px;
+}
+.analysis-controls label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  margin-left: auto;
+}
+.rca-breadcrumb {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 13px;
+  margin: 20px 0 12px;
+}
+.rca-breadcrumb > button {
+  color: #7a8996;
+}
+.rca-breadcrumb .reset-rca {
+  margin-left: auto;
+  color: #5c7181;
+}
+.frequency-controls {
+  display: flex;
+  gap: 14px;
+}
+.frequency-controls button,
+.frequency-controls select {
+  flex: 1;
+  border: 1px solid #d8dfe7;
+  border-radius: 3px;
+  padding: 8px;
+  background: white;
+  color: #677b8e;
+  font-size: 12px;
+  min-width: 0;
+}
+.frequency-controls [aria-pressed="true"] {
+  background: #e2eaf3;
+}
+.analysis-description {
+  font-size: 12px;
+  margin: 18px 0;
+}
+.analysis-legend {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  font-size: 11px;
+}
+.analysis-legend span:first-child {
+  color: #65bed1;
+}
+.analysis-legend span:last-child {
+  color: #654eb8;
+}
+.insight-columns.fit-analysis {
+  grid-template-columns: 2fr 1fr;
+}
+
+@media (max-width: 900px) {
+  .modal-drawer {
+    width: 95vw;
+  }
+  .insight-columns,
+  .insight-columns.fit-analysis {
+    grid-template-columns: 1fr;
+  }
+  .insight-results {
+    border-left: 0;
+    border-top: 1px solid #dce3eb;
+  }
+  .notes-layout {
+    grid-template-columns: 1fr 1fr;
+  }
+  .comparison-grid {
+    grid-template-columns: repeat(var(--compare-columns, 3), minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .modal-drawer {
+    width: 100vw;
+  }
+  .modal-share,
+  .modal-embed,
+  .modal.modal-table {
+    width: calc(100vw - 20px);
+    max-height: calc(100vh - 20px);
+  }
+  .modal-heading p {
+    font-size: 10px;
+  }
+  .embed-types {
+    padding: 0 12px 12px;
+    gap: 5px;
+  }
+  .embed-types button {
+    padding: 8px;
+  }
+  .embed-types strong {
+    font-size: 12px;
+  }
+  .embed-types span {
+    font-size: 10px;
+  }
+  .sharing-platforms {
+    margin: 0 12px 12px;
+  }
+  .sharing-platforms label {
+    padding: 8px;
+    font-size: 11px;
+  }
+  .share-recipient-group {
+    margin: 10px 12px;
+  }
+  .recipient-input input {
+    min-width: 120px;
+  }
+  .notes-layout {
+    grid-template-columns: 1fr;
+  }
+  .note-reference {
+    max-height: 300px;
+    overflow: auto;
+  }
+  .notes-empty {
+    min-height: 210px;
+  }
+  .notes-empty h3 {
+    font-size: 18px;
+  }
+  .comparison-grid {
+    grid-template-columns: 1fr;
+  }
+  .compare-actions {
+    gap: 8px;
+  }
+  .compare-actions > button {
+    font-size: 11px;
+  }
+  .modal-page .modal-body {
+    padding: 12px;
+  }
+  .modal-page .modal-heading p {
+    font-size: 12px;
+  }
+  .insight-output {
+    padding: 14px 18px;
+  }
+  .insight-output h3 {
+    font-size: 22px;
+  }
+  .frequency-controls {
+    gap: 5px;
+  }
+  .rca-breadcrumb {
+    flex-wrap: wrap;
+  }
+  .rca-breadcrumb strong {
+    overflow-wrap: anywhere;
+  }
+}
+
+/* Keeps the export formats next to the More menu without leaving the viewport. */
+.export-submenu {
+  position: relative;
+}
+.export-submenu > button {
+  width: 100%;
+}
+.export-options {
+  position: absolute;
+  right: 100%;
+  bottom: 0;
+  width: 120px;
+  padding: 5px 0;
+  background: white;
+  border: 1px solid #e2e5ea;
+  border-radius: 3px;
+  box-shadow: 0 3px 12px #0002;
+}
+.export-options > button {
+  width: 100%;
+}
+@media (max-width: 600px) {
+  .export-options {
+    width: 95px;
+  }
+}
+
+/* Comparison export stays in the page heading beside the breadcrumb. */
+.modal-page {
+  position: relative;
+}
+.modal-page .compare-export {
+  position: absolute;
+  top: 25px;
+  right: 24px;
+}
+.modal-page .compare-export > button {
+  border: 1px solid #cbd5df;
+  border-radius: 3px;
+  padding: 7px 14px;
+  color: #435a72;
+}
+.modal-page .compare-export-menu {
+  right: 0;
+  left: auto;
+}
+.modal-page .modal-heading {
+  padding-right: 85px;
+}

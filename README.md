@@ -28,13 +28,15 @@ The `dist/` folder can be served by any static web host. This project has no ser
 - Selection chips combine across charts. Drill-up and per-panel reset clear only dependent selections.
 - Searchable advisor and RO selectors support multiple selections, Apply, and Cancel.
 - Dates, managers, advisors, VINs, status, and table sorting work with local records.
-- Chart toolbars support chart types, metric sorting, table view, fullscreen, and independent comparisons.
-- CSV and PNG exports create local downloads; PDF uses the browser's print dialog.
-- Chart notes and filter preferences save in browser storage. Share and Embed produce local frontend links.
-- Insight generation and guided analysis use deterministic local calculations.
+- Chart toolbars provide bar, area, column, lollipop, and line views, draft sorting, refresh, information, fullscreen, and table dialogs.
+- Quick compare supports independent cards, 1/2/3-column layouts, and image/PDF exports.
+- PDF, PNG, Excel, and CSV exports create real local files. Export libraries load only when needed.
+- Multiple notes, optional chart snapshots, saved insights, and filter preferences persist in browser storage.
+- Sharing mirrors In-app/WhatsApp/Teams recipient forms and saves a local draft. Embed links preserve selected chart state and toolbar controls.
+- Insights provide Generate, prompts, and Current/Saved views. Guided RCA includes category selection, Auto RCA, YTD/QTD/MTD, a separate percentage axis, fit, and reset, using local calculations.
 - Responsive layouts, keyboard controls, dialog focus management, and empty states.
 
-See [the interaction guide](docs/interactions.md) for the observed behavior and frontend boundaries.
+See [the toolbar audit](docs/toolbar-audit.md) and [the interaction guide](docs/interactions.md) for the observed behavior and frontend boundaries.
 
 ## Reference fidelity and sample data
 
@@ -42,7 +44,7 @@ The initial summary values reproduce the visible reference: $510.66K total sales
 
 The sixteen visible repair-order rows are copied into local fixtures. They are **not the complete 446-record production dataset**. Relationships to managers, dates, advisors, and VINs, service-sale amounts, and the parts/labor/misc split in those rows are sample metadata used to demonstrate interactions. Applying filters recalculates values from these sixteen sample rows, so filtered summaries will differ from the original platform. The remaining source chart values were visually transcribed and are approximate where the reference only showed rounded labels.
 
-The SVG charts, icons, and logo treatment are reconstructed rather than extracted production assets. The platform header, sidebar, tab strip, Edit control, and Dashboard Analyst control are omitted. Insights displays deterministic calculations; it is not connected to an AI service. Notes and preferences stay in this browser. Share/Embed links point to the running frontend; they do not publish or grant access to the original platform. Only the observed dashboard screen is replicated, not the original platform's editor, account management, or other applications.
+The SVG charts, icons, and logo treatment are reconstructed rather than extracted production assets. The platform header, sidebar, tab strip, Edit control, and Dashboard Analyst control are omitted. Insights displays deterministic calculations; it is not connected to an AI service. Notes and preferences stay in this browser. Sharing saves local drafts, and embed links point to the running frontend; they do not publish or grant access to the original platform. Only the observed dashboard screen is replicated, not the original platform's editor, account management, or other applications.
 
 ## Connect your backend later
 
@@ -91,9 +93,11 @@ For production, replace `referenceSummary` and the default chart fixtures with b
 | `src/data/interactions.js`                                 | Selection reducer and cross-filter matching.                     |
 | `src/data/detailData.js`, `kpiData.js`, `salesMix.js`      | Table columns, weekday values, and donut totals.                 |
 | `src/data/panels.js`                                       | Chart labels, metric definitions, and sorting.                   |
-| `src/utils/`                                               | Browser storage, downloads, image export, and print.             |
-| `src/styles.css`, `interactions.css`                       | Reference layout and interaction/responsive styles.              |
+| `src/utils/`                                               | Browser storage and PNG/PDF/XLSX/CSV downloads.                  |
+| `src/styles.css`, `interactions.css`, `chartUtilities.css` | Reference layout and interaction/responsive styles.              |
 | `tests/`                                                   | Filters, totals, selections, drill-up, exports, and preferences. |
+
+Additional toolbar files: `ChartEmbed.jsx` validates embed choices, `ChartShare.jsx` manages local recipient drafts, `ChangeChart.jsx` draws RCA periods, and `data/analysis.js` / `data/embed.js` keep their calculations separate from UI.
 
 Start with `App.jsx` to follow the page. It passes data and actions to each component through props. The filter drawer edits a local draft; Apply sends that draft back to the page. The cards, charts, and table then use the same filtered rows. Each component and named helper has a short comment explaining its job.
 

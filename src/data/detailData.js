@@ -117,6 +117,7 @@ export function aggregateDetails(rows, field) {
 
 // Formats a detail value without changing its underlying sorting value.
 export function detailValue(value, format) {
+  if (format === "integer") return Number(value || 0).toFixed(0);
   if (format === "money")
     return compactMoney(value).replace("$", "$ ").replace("K", " K");
   if (format === "percent") return `${Number(value || 0).toFixed(2)}%`;

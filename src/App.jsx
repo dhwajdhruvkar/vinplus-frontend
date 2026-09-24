@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { DashboardContext } from "./components/DashboardContext.jsx";
+import { readEmbed } from "./data/embed.js";
 import Icon from "./components/Icon.jsx";
 import { DashboardToolbar } from "./components/DashboardToolbar.jsx";
 import { SelectionBar } from "./components/SelectionBar.jsx";
@@ -27,7 +29,10 @@ import {
 
 // Shows the shop supplies dashboard and connects its filters, charts, and dialogs.
 export default function App() {
-  const [filters, setFilters] = useState({ ...defaultFilters });
+  const [embed] = useState(() => readEmbed(window.location.search));
+  const [filters, setFilters] = useState(
+    embed?.filters || { ...defaultFilters },
+  );
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [dialog, setDialog] = useState(null);
   const [comfortable, setComfortable] = useState(false);
@@ -36,8 +41,9 @@ export default function App() {
   );
   const { toast, notify } = useToast();
 
-  const interactions = useDashboardInteractions();
-  const embedded = new URLSearchParams(window.location.search).get("chart");
+  const interactions = useDashboardInteractions(embed?.interactions);
+  const embedded = embed?.id;
+  const context = { filters, interactions, embed };
   const rows = useMemo(
     () =>
       matchSelections(filterRecords(records, filters), interactions.selections),
@@ -104,123 +110,129 @@ export default function App() {
 
   if (embedded === "records") {
     return (
-      <div className="embedded-chart embedded-records">
-        <RepairOrders
-          rows={rows}
-          filters={filters}
-          onFilterChange={updateFilter}
-          onSelectRecord={(record) =>
-            interactions.select("records", "RO Details", "ro", record.ro)
-          }
-          onResetSelection={() => interactions.resetPanel("records")}
-          resetKey={interactions.revision}
-        />
-      </div>
+      <DashboardContext.Provider value={context}>
+        <div className="embedded-chart embedded-records">
+          <RepairOrders
+            rows={rows}
+            filters={filters}
+            onFilterChange={updateFilter}
+            onSelectRecord={(record) =>
+              interactions.select("records", "RO Details", "ro", record.ro)
+            }
+            onResetSelection={() => interactions.resetPanel("records")}
+            resetKey={interactions.revision}
+          />
+        </div>
+      </DashboardContext.Provider>
     );
   }
 
   if (embedded && panels[embedded]) {
     return (
-      <DashboardCharts
-        embedded={embedded}
-        rows={rows}
-        filtered={filtered}
-        summary={summary}
-        filters={filters}
-        onFilterChange={updateFilter}
-        interactions={interactions}
-      />
+      <DashboardContext.Provider value={context}>
+        <DashboardCharts
+          embedded={embedded}
+          rows={rows}
+          filtered={filtered}
+          summary={summary}
+          filters={filters}
+          onFilterChange={updateFilter}
+          interactions={interactions}
+        />
+      </DashboardContext.Provider>
     );
   }
 
   return (
-    <div className={`app ${comfortable ? "comfortable-view" : ""}`}>
-      <main className="workspace">
-        <DashboardToolbar
-          comfortable={comfortable}
-          hasSavedFilters={hasSavedFilters}
-          onComfortableChange={setComfortable}
-          onOpenDialog={setDialog}
-          onOpenFilters={openFilters}
-          onReset={resetFilters}
-          onLoadFilters={loadFilters}
-          onExport={exportRecords}
-          onReviewRecords={reviewRecords}
-        />
-        <div className="dashboard-scroll">
-          <SelectionBar
-            selections={interactions.selections}
-            onClearSelection={interactions.remove}
-            filters={filters}
-            onOpenFilters={openFilters}
-            onFilterChange={updateFilter}
-          />
-          <KpiCards
-            summary={summary}
+    <DashboardContext.Provider value={context}>
+      <div className={`app ${comfortable ? "comfortable-view" : ""}`}>
+        <main className="workspace">
+          <DashboardToolbar
             comfortable={comfortable}
-            rows={rows}
-            filtered={filtered}
-            onMonthSelect={() =>
-              interactions.select(
-                "kpi",
-                "Mon - Close date",
-                "month",
-                "2024-02",
-                undefined,
-                0,
-                "Feb",
-              )
-            }
+            hasSavedFilters={hasSavedFilters}
+            onComfortableChange={setComfortable}
+            onOpenDialog={setDialog}
+            onOpenFilters={openFilters}
+            onReset={resetFilters}
+            onLoadFilters={loadFilters}
+            onExport={exportRecords}
+            onReviewRecords={reviewRecords}
           />
-          <div className="dashboard-grid">
-            <DashboardCharts
+          <div className="dashboard-scroll">
+            <SelectionBar
+              selections={interactions.selections}
+              onClearSelection={interactions.remove}
+              filters={filters}
+              onOpenFilters={openFilters}
+              onFilterChange={updateFilter}
+            />
+            <KpiCards
+              summary={summary}
+              comfortable={comfortable}
               rows={rows}
               filtered={filtered}
-              summary={summary}
-              filters={filters}
-              onFilterChange={updateFilter}
-              interactions={interactions}
-            />
-            <RepairOrders
-              rows={rows}
-              filters={filters}
-              onFilterChange={updateFilter}
-              onSelectRecord={(record) =>
-                interactions.select("records", "RO Details", "ro", record.ro)
+              onMonthSelect={() =>
+                interactions.select(
+                  "kpi",
+                  "Mon - Close date",
+                  "month",
+                  "2024-02",
+                  undefined,
+                  0,
+                  "Feb",
+                )
               }
-              onResetSelection={() => interactions.resetPanel("records")}
-              resetKey={interactions.revision}
             />
+            <div className="dashboard-grid">
+              <DashboardCharts
+                rows={rows}
+                filtered={filtered}
+                summary={summary}
+                filters={filters}
+                onFilterChange={updateFilter}
+                interactions={interactions}
+              />
+              <RepairOrders
+                rows={rows}
+                filters={filters}
+                onFilterChange={updateFilter}
+                onSelectRecord={(record) =>
+                  interactions.select("records", "RO Details", "ro", record.ro)
+                }
+                onResetSelection={() => interactions.resetPanel("records")}
+                resetKey={interactions.revision}
+              />
+            </div>
           </div>
-        </div>
-      </main>
-      {isFilterOpen && (
-        <FilterDrawer
-          filters={filters}
-          saved={hasSavedFilters}
-          onClose={() => setIsFilterOpen(false)}
-          onApply={applyFilters}
-          onSave={saveFilters}
-          onLoad={readPreference}
-        />
-      )}
-      {dialog && (
-        <DashboardDialog
-          dialog={dialog}
-          rows={rows}
-          summary={summary}
-          filters={filters}
-          onClose={() => setDialog(null)}
-          onReviewRecords={reviewRecords}
-          onOpenFilters={openFilters}
-        />
-      )}
-      {toast && (
-        <div className="toast" role="status">
-          <Icon name="check" size={17} />
-          {toast}
-        </div>
-      )}
-    </div>
+        </main>
+        {isFilterOpen && (
+          <FilterDrawer
+            filters={filters}
+            saved={hasSavedFilters}
+            onClose={() => setIsFilterOpen(false)}
+            onApply={applyFilters}
+            onSave={saveFilters}
+            onLoad={readPreference}
+          />
+        )}
+        {dialog && (
+          <DashboardDialog
+            dialog={dialog}
+            rows={rows}
+            summary={summary}
+            filters={filters}
+            onClose={() => setDialog(null)}
+            onReviewRecords={reviewRecords}
+            onOpenFilters={openFilters}
+          />
+        )}
+        {toast && (
+          <div className="toast" role="status">
+            <Icon name="check" size={17} />
+            {toast}
+          </div>
+        )}
+      </div>
+    </DashboardContext.Provider>
   );
 }

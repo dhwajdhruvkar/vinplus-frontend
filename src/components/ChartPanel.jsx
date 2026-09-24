@@ -1,13 +1,18 @@
-import React, { useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
+import { DashboardContext } from "./DashboardContext.jsx";
 import { useFullscreenFocus } from "../hooks/useFullscreenFocus.js";
 import { Panel } from "./Panel.jsx";
-import { DetailTable } from "./DetailTable.jsx";
 import { ChartTools } from "./ChartTools.jsx";
 import { ChartDialog } from "./ChartDialog.jsx";
 import { sortChartRows } from "../data/panels.js";
 import { detailCSV } from "../data/detailData.js";
 import { downloadFile } from "../utils/browser.js";
-import { exportPanelImage, printPanel } from "../utils/chartExport.js";
+import {
+  exportPanelImage,
+  exportPanelPDF,
+  exportPanelExcel,
+  panelCanvas,
+} from "../utils/chartExport.js";
 
 // Keeps chart display options local while the dashboard owns data selections.
 export function ChartPanel({
@@ -26,16 +31,29 @@ export function ChartPanel({
   description,
   comparisonRows = [],
   comparisonFiltered = false,
+  defaultType = "bar",
 }) {
-  const [sort, setSort] = useState(null);
-  const [mode, setMode] = useState("");
+  const context = useContext(DashboardContext);
+  const [sort, setSort] = useState(context.embed?.sort || null);
+  const [mode, setMode] = useState(context.embed?.mode || "");
   const [fullscreen, setFullscreen] = useState(false);
   const [dialog, setDialog] = useState("");
   const [message, setMessage] = useState("");
   const [version, setVersion] = useState(0);
+  const [noteImage, setNoteImage] = useState("");
   const ref = useRef(null);
   useFullscreenFocus(ref, fullscreen);
   const displayedRows = sortChartRows(rows, sort);
+  const options = context.embed?.controls;
+  const snapshot = {
+    filters: context.filters,
+    interactions: {
+      selections: context.interactions.selections,
+      levels: context.interactions.levels,
+    },
+    mode,
+    sort,
+  };
 
   // Restores this panel's original chart type, sorting, and drill selections.
   function resetPanel() {
@@ -58,10 +76,18 @@ export function ChartPanel({
         );
       else if (action === "png")
         await exportPanelImage(ref.current, id, displayedRows, columns);
-      else if (action === "print") printPanel(ref.current);
-      else if (action === "table")
-        setMode((current) => (current === "table" ? "" : "table"));
-      else setDialog(action);
+      else if (action === "pdf")
+        await exportPanelPDF(ref.current, id, displayedRows, columns, title);
+      else if (action === "xlsx")
+        await exportPanelExcel(id, displayedRows, columns);
+      else if (action === "notes") {
+        setNoteImage(
+          (await panelCanvas(ref.current, displayedRows, columns)).toDataURL(
+            "image/png",
+          ),
+        );
+        setDialog(action);
+      } else setDialog(action);
     } catch {
       setMessage("The export could not be created. Try CSV instead.");
     }
@@ -76,12 +102,15 @@ export function ChartPanel({
       <Panel
         title={title}
         id={id}
-        className={className}
+        className={`${className} ${options && !options.includes("title") ? "hide-panel-title" : ""}`}
         crumbs={crumbs}
         active={level}
         actions={
           <ChartTools
             title={title}
+            type={mode || defaultType}
+            sort={sort}
+            options={options}
             level={level}
             fields={fields}
             onUp={onUp}
@@ -95,15 +124,7 @@ export function ChartPanel({
         }
       >
         <div className="panel-content" key={version}>
-          {mode === "table" ? (
-            <DetailTable
-              rows={displayedRows}
-              columns={columns}
-              label={`${title} table view`}
-            />
-          ) : (
-            children({ sort, mode, fullscreen })
-          )}
+          {children({ sort, mode, fullscreen })}
         </div>
         {message && (
           <p className="export-message" role="status">
@@ -116,11 +137,14 @@ export function ChartPanel({
           kind={dialog}
           id={id}
           title={title}
-          rows={rows}
+          rows={displayedRows}
           columns={columns}
           description={description}
           comparisonRows={comparisonRows}
           comparisonFiltered={comparisonFiltered}
+          snapshot={snapshot}
+          noteImage={noteImage}
+          level={level}
           onClose={() => setDialog("")}
         />
       )}

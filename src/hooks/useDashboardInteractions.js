@@ -5,8 +5,8 @@ import {
 } from "../data/interactions.js";
 
 // Connects chart drill-downs, selection chips, and reset actions.
-export function useDashboardInteractions() {
-  const [state, dispatch] = useReducer(interactionReducer, initialInteractions);
+export function useDashboardInteractions(initial = initialInteractions) {
+  const [state, dispatch] = useReducer(interactionReducer, initial);
 
   // Selects a chart category and optionally moves that panel to its next table.
   function select(

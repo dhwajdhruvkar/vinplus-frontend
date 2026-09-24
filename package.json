@@ -13,8 +13,10 @@
   "dependencies": {
     "@fontsource/lato": "5.2.7",
     "@fontsource/poppins": "5.2.7",
+    "jspdf": "4.2.1",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "write-excel-file": "4.1.1"
   },
   "devDependencies": {
     "prettier": "3.9.6",

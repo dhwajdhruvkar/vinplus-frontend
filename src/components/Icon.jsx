@@ -1,5 +1,12 @@
 import React from "react";
 const paths = {
+  expand: "M3 9V3h6M15 3h6v6M21 15v6h-6M9 21H3v-6",
+  note: "M4 3h16v13l-5 5H4ZM8 7h8M8 11h8M8 15h5M15 21v-5h5",
+  compare: "M3 5h7v14H3ZM14 5h7v14h-7ZM8 2h8M12 2v20",
+  share:
+    "M8 12l9-6M8 12l9 6M8 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM22 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM22 19a3 3 0 1 1-6 0 3 3 0 0 1 6 0",
+  globe:
+    "M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM3 12h18M12 3c-5 4-5 14 0 18 5-4 5-14 0-18Z",
   up: "M12 21V3M5 10l7-7 7 7",
   collapse: "M4 10h6V4M20 14h-6v6M3 3l7 7M21 21l-7-7",
   bars: "M4 21V10h4v11M10 21V3h4v18M16 21V7h4v14",
