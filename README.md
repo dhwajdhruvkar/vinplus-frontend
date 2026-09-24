@@ -22,6 +22,8 @@ The `dist/` folder can be served by any static web host. This project has no ser
 
 ## What works
 
+The UI refresh is isolated in `src/dashboardDesign.css`, imported by `src/main.jsx`. All components, option labels, handlers, data, and frontend workflows remain unchanged from commit `c3145f2`. The stylesheet aligns cards and filters, improves typography and spacing, and keeps the original chart toolbars visible. Share remains in each chart's More menu. It adds hover feedback and short card/menu entrances, with reduced-motion support; standalone embeds retain their original styles.
+
 - Five KPI cards switch between monthly points and weekday charts in place.
 - Dealer and VIN count charts filter the dashboard; other charts open their own inline tables.
 - Manager details drill into recovery status. Advisor, monthly, and VIN tables can select an RO.
