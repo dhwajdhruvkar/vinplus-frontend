@@ -50,6 +50,12 @@ The sixteen visible repair-order rows are copied into local fixtures. They are *
 
 The SVG charts, icons, and logo treatment are reconstructed rather than extracted production assets. The platform header, sidebar, tab strip, Edit control, and Dashboard Analyst control are omitted. Insights displays deterministic calculations; it is not connected to an AI service. Notes and preferences stay in this browser. Sharing and conversations save local previews, and embed links point to the running frontend; they do not publish or grant access to the original platform. Only the observed dashboard screen is replicated, not the original platform's editor, account management, or other applications.
 
+## Backend engineering handoff
+
+The complete [backend handoff package](docs/backend/README.md) covers all five KPIs, nine charts, filters and drill-downs, table behavior, exports, comparisons, insights, notes, preferences, embeds, and Share/conversation integrations. It includes an offline HTML guide, a proposed OpenAPI contract, worked examples, a field dictionary and a function-to-source map.
+
+The package describes the frontend at `b0873bd` and separates observed behavior from proposed production requirements and unresolved business decisions. No backend is deployed. Start with [the engineering guide](docs/backend/backend-handoff.md) and its decision log before connecting live data.
+
 ## Connect your backend later
 
 `src/data/dashboard.js` holds the fixtures, formatters, and data transformations. Replace the fixtures with your data-loading layer and supply records with:

@@ -1,0 +1,97 @@
+﻿schema,field,current_frontend_alias,api_type,required,unit,meaning,decision_or_constraint
+RepairOrder,recordId,new stable row identity,string,yes,identifier,Unique reporting row ID across tenants/dealers/source systems.,Do not use displayed RO number as a global primary key.
+RepairOrder,roNumber,ro,string,yes,display identifier,Source repair-order number kept as text.,Confirm reuse and source composite key.
+RepairOrder,dealerId,dealer selection,string | null,yes,identifier,Stable dealer ID used for permissions and selections.,Server intersects with authorized dealer scope.
+RepairOrder,dealerCode,dealer display,string | null,yes,label,Dealer code shown by current charts and tables.,May differ from dealerId; allow missing category.
+RepairOrder,dealerType,type,string | null,yes,label,Source dealer classification.,Literal NULL in fixture is not a canonical classification.
+RepairOrder,make,make,string | null,yes,label,Vehicle make label.,"Source, not inferred from synthetic fixture VIN."
+RepairOrder,model,model,string | null,yes,label,Vehicle model label.,Allow unknown values.
+RepairOrder,vin,vin,string | null,yes,identifier,Vehicle identification number used by VIN groups.,Unknown VIN does not identify a single real vehicle.
+RepairOrder,closedDate,date,string,yes,business date,Inclusive-filter business close date.,Agree reporting timezone and reopened-order rules.
+RepairOrder,managerId,manager selection,string | null,yes,identifier,Stable historical manager identity.,Agree time-of-close versus current assignment.
+RepairOrder,managerName,manager display,string | null,yes,label,Manager label displayed by chart and filter.,Names are not unique identifiers.
+RepairOrder,advisorId,advisor selection,string | null,yes,identifier,Stable service-advisor identity.,Agree historical assignment semantics.
+RepairOrder,advisorName,advisor display,string | null,yes,label,Service-advisor display name.,Names are not unique identifiers.
+RepairOrder,status,status,Status,yes,enum,fully_recovered or partially_recovered mapped to current labels.,Current loss > 0 includes zero recovery in partial; agree over-recovery.
+RepairOrder,currency,currently USD formatting,string,yes,ISO 4217,Currency of all monetary amounts on this record.,Reject mixed-currency totals or apply an agreed conversion policy.
+RepairOrder,sourceRevision,new,string,yes,source version,Upstream revision/watermark used for ingestion traceability.,Never blindly overwrite newer rows with an older source event.
+RepairOrder,unrecoveredPercent,percent,number,yes,percentage points,Canonical row shortfall percentage.,Agree source-provided versus high-precision derived value; use same for display/sort/export.
+RepairOrder,expectedShopSupplies,expected,Decimal,yes,currency,Expected shop-supplies charge.,Source amount or approved rate/cap policy; not hard-coded 119.
+RepairOrder,actualShopSupplies,actual,Decimal,yes,currency,Recovered or collected shop-supplies charge.,Also displayed as Shop Supplies in shared detail columns.
+RepairOrder,unrecoveredShopSupplies,loss,Decimal,yes,currency,Expected less recovered for this order under current behavior.,Agree signed net amount versus per-order positive-only shortfall.
+RepairOrder,laborSales,labor,Decimal,yes,currency,Actual source labor sales.,Remove the sample 57 percent allocation.
+RepairOrder,partSales,parts,Decimal,yes,currency,Actual source parts sales.,"Agree treatment of discounts, tax and credits."
+RepairOrder,miscSales,misc,Decimal,yes,currency,Actual source miscellaneous sales.,Remove the sample 18 percent allocation.
+RepairOrder,serviceSales,serviceSales,Decimal,yes,currency,Labor plus parts basis used by Total Sales.,Remove expected multiplied by 17.22; reconcile to source components.
+Summary,totalSales,sales,Decimal,yes,currency,Sum of selected serviceSales.,Label is Labor + Parts; donut denominator is different.
+Summary,expectedAmount,expected,Decimal,yes,currency,Sum of selected expected supplies.,Partial recovery card footer currently repeats this all-record sum.
+Summary,recoveredAmount,actual,Decimal,yes,currency,Sum of selected actual supplies.,Confirm scope despite Amount of Flagged Records subtitle.
+Summary,unrecoveredAmount,loss,Decimal,yes,currency,Expected amount less recovered amount.,Agree signed versus positive-only policy.
+Summary,recordCount,total,integer,yes,count of ROs,Complete selected reporting-record count.,"Count at approved RO grain, not joined line items or loaded page."
+Summary,flaggedCount,partial,integer,yes,count of ROs,Count of selected orders with positive shortfall.,Includes actual equal to zero in current frontend.
+Summary,flaggedPercent,rate,number,yes,percentage points,100 times flaggedCount divided by recordCount; zero when no records.,Recompute ratio per bucket; do not average row percentages.
+Summary,recoveryPercent,recovery,number,yes,percentage points,100 times recoveredAmount divided by expectedAmount; zero when denominator is zero.,Can exceed 100 if over-recovery is allowed; do not silently clamp.
+MetricBucket,key,name selection adapter,string | null,yes,stable key or null,"Group identity such as dealerId, managerId, VIN, month or category key.","Null is missing category, not literal (Blank)."
+MetricBucket,label,name display adapter,string,yes,label,Visible category label.,Do not use label as stable identity.
+MetricBucket,recordCount,expected for order charts; count for mixed charts,integer,conditional/optional,count,All reporting orders in this group.,Return unscaled counts; widths are presentation-only.
+MetricBucket,flaggedCount,actual for order charts,integer,conditional/optional,count,Orders in this group with positive shortfall.,Count aliases expected/actual in order charts are not money.
+MetricBucket,advisorCount,advisors,integer,conditional/optional,count,Distinct advisors for manager detail.,Agree whether unknown staff contributes a distinct count.
+MetricBucket,dealerCount,dealers,integer,conditional/optional,count,Distinct dealers for manager detail.,Use stable identities and approved missing-value policy.
+MetricBucket,expectedAmount,expected,Decimal,conditional/optional,currency,Group sum of expected supplies.,Recurring chart meaning still requires a business decision.
+MetricBucket,recoveredAmount,actual,Decimal,conditional/optional,currency,Group sum of recovered supplies.,Same canonical amount may appear in two detail columns.
+MetricBucket,unrecoveredAmount,loss,Decimal,conditional/optional,currency,Group unrecovered amount.,VIN loss ideal-cost label currently maps to this amount.
+MetricBucket,laborSales,labor,Decimal,conditional/optional,currency,Group labor sales.,Use source amounts.
+MetricBucket,partSales,parts,Decimal,conditional/optional,currency,Group parts sales.,Use source amounts.
+MetricBucket,miscSales,misc,Decimal,conditional/optional,currency,Group miscellaneous sales.,Use source amounts.
+MetricBucket,serviceSales,serviceSales,Decimal,conditional/optional,currency,Group Labor + Parts sales.,Consistent with summary basis.
+MetricBucket,value,sales mix value / trend value,Decimal,conditional/optional,currency for current amount charts,Single series amount when the chart uses one generic value.,Provide series metadata; sales category uses key and value.
+Filters,from,from,string | null,yes,business date or null,First included business close date.,Null means no lower bound; validate ordered date range.
+Filters,to,to,string | null,yes,business date or null,Last included business close date.,Translate to exclusive next-day instant in reporting timezone.
+Filters,managerIds,manager,array,yes,IDs,OR alternatives within the manager filter.,Empty means unrestricted; intersect with all other predicates.
+Filters,advisorIds,advisor,array,yes,IDs,OR alternatives within the advisor filter.,Preserve draft Apply/Cancel behavior.
+Filters,statuses,status,array,yes,enums,Selected status alternatives.,Both or neither is unrestricted in current UI.
+Filters,vins,vin,array,yes,identifiers,VIN alternatives for filter selection.,Use explicit null selection predicate for missing category.
+Filters,recordIds,ro,array,yes,IDs,Selected internal record identities.,Picker displays RO number plus enough context to disambiguate.
+Filters,query,query,string,yes,text,Case-insensitive text across approved record search fields.,No dedicated main-toolbar global search input exists today.
+Selection,owner,owner,string,yes,chart ID,Originating panel or KPI for this predicate.,Selections from distinct owners remain AND conditions.
+Selection,field,field through ID adapter,string,yes,field name,Approved selected dimension.,Allowlist dimensions; no arbitrary SQL expressions.
+Selection,value,value through ID adapter,string | null,yes,ID/key or null,Selected category identity.,Null represents missing group; no display-label predicates.
+Selection,depth,depth,integer,yes,integer,Selection dependency depth within its owner.,Replacing/removing parent clears that owner at this and deeper depths.
+Meta,requestId,new,string,yes,trace ID,Correlates a response with server logs.,Safe to show in error reports; never a credential.
+Meta,dataVersion,new,string,yes,dataset version,Published reporting version used by the response.,Use consistently across summary/charts/drills/exports.
+Meta,queryHash,new,string,yes,query identity,Hash of normalized authorized query context.,Include tenant/access scope; prevent cross-tenant cache reuse.
+Meta,generatedAt,new,string,yes,UTC instant,Time the response was computed.,Does not imply source is current.
+Meta,sourceUpdatedAt,new,string,yes,UTC instant,Freshness of the published source data.,Expose stale source separately from request failure.
+Meta,currency,currently dollar formatting,string,yes,ISO 4217,Currency of the returned aggregate.,No silent mixed-currency sums.
+Meta,reportingTimezone,currently fixture date labels,string,yes,IANA timezone,Timezone used for dates and period grouping.,Not inferred from browser location.
+Meta,complete,new,boolean,yes,boolean,Whether the result covers the requested authorized scope.,Do not describe partial data as complete.
+Meta,noData,new,boolean,conditional/optional,boolean,True when the valid query has no business records.,"Distinct from denied, failed and not-yet-loaded."
+Meta,truncated,new,boolean,conditional/optional,boolean,True when an explicit display/cardinality limit clipped results.,Return complete export option and total counts.
+Conversation,conversationId,id,string,yes,identifier,Server-owned conversation identity.,Do not key solely by chart ID when provider thread spans charts.
+Conversation,channel,channel normalized,string,yes,enum,"outlook, teams, whatsapp or in-app.",Map display capitalization in frontend adapter.
+Conversation,title,recipient display,string,yes,label,Conversation title for thread selector.,"May describe a person, team channel or group."
+Conversation,participantIds,recipient plus local sender,array,yes,IDs,Authorized conversation participants.,External identity and app user identity require explicit mapping.
+Conversation,snapshotIds,snapshot/pinned chart,array,yes,IDs,Charts associated with the conversation.,Each message may point to a specific snapshot.
+Conversation,lastSequence,new,integer,yes,sequence,Latest durable conversation message sequence.,Monotonically allocated within a conversation.
+Conversation,lastReadSequence,message unread flags,integer,yes,sequence,Authenticated member's last read message.,Advance monotonically; never clear another member's unread state.
+Conversation,unreadCount,computed local unread,integer,yes,count,Incoming unread count for the authenticated user.,Read marker alone is not total-message count when own messages exist.
+Conversation,revision,new,integer,yes,version,Conversation projection version for event/refetch ordering.,Ignore stale updates and refetch on gaps.
+Conversation,updatedAt,updatedAt,string,yes,UTC instant,Most recent conversation update.,Sort threads consistently with a deterministic tie-breaker.
+Conversation,canSend,currently always local preview,boolean,yes,boolean,User and provider currently permit sending.,Enforce on server even when UI enables composer.
+Conversation,canSendFreeText,new,boolean,yes,boolean,Freeform text permitted by provider policy now.,Recheck WhatsApp service window at send time.
+Conversation,templateRequired,new,boolean,yes,boolean,An approved provider template is required.,Current UI needs explicit handling before live WhatsApp outside window.
+Conversation,replyWindowExpiresAt,new,string | null,conditional/optional,UTC instant or null,End of provider freeform response window when applicable.,"Computed from validated provider state, not browser time."
+Conversation,reason,new,string | null,conditional/optional,text or null,Safe explanation for unavailable capability.,No tokens or provider payload secrets.
+Message,messageId,id,string,yes,identifier,Server-owned message identity.,Separate from provider ID and idempotency key.
+Message,conversationId,parent conversation id,string,yes,identifier,Conversation containing this message.,Authorize membership before access.
+Message,sequence,new,integer,yes,sequence,Stable position within the conversation.,Deduplicate provider events; do not rely on timestamps alone.
+Message,senderId,sender/local direction,string,yes,identifier,Mapped sender identity.,Authenticate internally; validate provider sender externally.
+Message,senderName,recipient display/local sender,string,yes,label,Safe display name for sender.,Render as text.
+Message,direction,direction,string,yes,enum,Incoming or outgoing relative to signed-in participant.,Do not persist a universal direction for a multi-user conversation.
+Message,body,text,string,yes,text,Message body suitable for plain-text rendering.,Sanitize email HTML server-side; prevent script execution.
+Message,status,local sample state,string,yes,enum,"Actual lifecycle: queued, accepted, sent, delivered, read, received or failed.",Only expose provider-supported delivery/read evidence.
+Message,createdAt,createdAt,string,yes,UTC instant,Message creation time.,Preserve provider timing separately if needed.
+Message,updatedAt,new,string,yes,UTC instant,Time of last lifecycle update.,Avoid regressing terminal state from delayed notifications.
+Message,snapshotId,pinned snapshot moved to message context,string | null,conditional/optional,ID or null,Specific chart snapshot linked to this message.,No context does not imply latest shared chart automatically.
+Message,replyToMessageId,new,string | null,conditional/optional,ID or null,"App message being replied to, if known.",Map provider correlation; ambiguous messages need safe handling.
+Message,errorCode,new,string | null,conditional/optional,code or null,Actionable stable send error.,Keep safe user-facing text separate from provider diagnostics.

@@ -1,0 +1,864 @@
+{
+  "description": "Fictional worked examples for the proposed Vinplus backend API. No values are live production data. Resolve each schema pointer against backend-api.openapi.json.",
+  "frontendCommit": "b0873bdffb7635cd8769d3761f6b11ed4bab4924",
+  "examples": [
+    {
+      "name": "Dashboard query",
+      "schema": "#/components/schemas/DashboardQuery",
+      "note": "POST /dashboard/query. First query lets server choose a published dataVersion. Example reporting timezone UTC is a test choice, not a production default.",
+      "value": {
+        "context": {
+          "filters": {
+            "from": "2024-02-01",
+            "to": "2024-02-13",
+            "managerIds": [],
+            "advisorIds": [],
+            "statuses": [],
+            "vins": [],
+            "recordIds": [],
+            "query": ""
+          },
+          "selections": [],
+          "dataVersion": null
+        },
+        "chartIds": [
+          "dealerOrders",
+          "dealerLoss",
+          "salesMix",
+          "manager",
+          "advisor",
+          "monthly",
+          "vinOrders",
+          "vinLoss",
+          "recurring"
+        ],
+        "includeWeekdays": true
+      }
+    },
+    {
+      "name": "Dashboard response — all nine charts",
+      "schema": "#/components/schemas/DashboardResult",
+      "note": "All values reconcile to the same three fictional records. Empty weekdays are returned explicitly; renderer may omit zero Sunday per current behavior.",
+      "value": {
+        "meta": {
+          "requestId": "request_demo_1",
+          "dataVersion": "demo-data-v1",
+          "queryHash": "query_demo_all",
+          "generatedAt": "2026-09-25T10:00:00Z",
+          "sourceUpdatedAt": "2026-09-25T09:59:00Z",
+          "currency": "USD",
+          "reportingTimezone": "UTC",
+          "complete": true,
+          "noData": false,
+          "truncated": false
+        },
+        "summary": {
+          "totalSales": "1800.0000",
+          "expectedAmount": "250.0000",
+          "recoveredAmount": "160.0000",
+          "unrecoveredAmount": "90.0000",
+          "recordCount": 3,
+          "flaggedCount": 2,
+          "flaggedPercent": 66.66666666666667,
+          "recoveryPercent": 64.0
+        },
+        "charts": [
+          {
+            "chartId": "dealerOrders",
+            "rows": [
+              {
+                "key": "dealer_A",
+                "label": "dealer A",
+                "recordCount": 2,
+                "flaggedCount": 1
+              },
+              {
+                "key": "dealer_B",
+                "label": "dealer B",
+                "recordCount": 1,
+                "flaggedCount": 1
+              }
+            ],
+            "series": [
+              {
+                "key": "recordCount",
+                "label": "Total records",
+                "unit": "count"
+              },
+              {
+                "key": "flaggedCount",
+                "label": "Partial recovery",
+                "unit": "count"
+              }
+            ],
+            "complete": true,
+            "totalCategories": 2,
+            "truncated": false
+          },
+          {
+            "chartId": "dealerLoss",
+            "rows": [
+              {
+                "key": "dealer_A",
+                "label": "dealer A",
+                "unrecoveredAmount": "40.0000"
+              },
+              {
+                "key": "dealer_B",
+                "label": "dealer B",
+                "unrecoveredAmount": "50.0000"
+              }
+            ],
+            "series": [
+              {
+                "key": "unrecoveredAmount",
+                "label": "Unrecovered shop supplies",
+                "unit": "money",
+                "currency": "USD"
+              }
+            ],
+            "complete": true,
+            "totalCategories": 2,
+            "truncated": false
+          },
+          {
+            "chartId": "salesMix",
+            "rows": [
+              {
+                "key": "misc",
+                "label": "Misc Sales",
+                "value": "90.0000"
+              },
+              {
+                "key": "labor",
+                "label": "Labor Sales",
+                "value": "1080.0000"
+              },
+              {
+                "key": "parts",
+                "label": "Part Sales",
+                "value": "720.0000"
+              },
+              {
+                "key": "supplies",
+                "label": "Shop Supplies",
+                "value": "160.0000"
+              }
+            ],
+            "series": [
+              {
+                "key": "value",
+                "label": "Category sales",
+                "unit": "money",
+                "currency": "USD"
+              }
+            ],
+            "complete": true,
+            "totalCategories": 4,
+            "truncated": false
+          },
+          {
+            "chartId": "manager",
+            "rows": [
+              {
+                "key": "manager_M",
+                "label": "manager M",
+                "expectedAmount": "200.0000",
+                "recoveredAmount": "160.0000",
+                "unrecoveredAmount": "40.0000"
+              },
+              {
+                "key": "manager_N",
+                "label": "manager N",
+                "expectedAmount": "50.0000",
+                "recoveredAmount": "0.0000",
+                "unrecoveredAmount": "50.0000"
+              }
+            ],
+            "series": [
+              {
+                "key": "expectedAmount",
+                "label": "Expected supplies",
+                "unit": "money",
+                "currency": "USD"
+              },
+              {
+                "key": "recoveredAmount",
+                "label": "Actual supplies",
+                "unit": "money",
+                "currency": "USD"
+              },
+              {
+                "key": "unrecoveredAmount",
+                "label": "Unrecovered supplies",
+                "unit": "money",
+                "currency": "USD"
+              }
+            ],
+            "complete": true,
+            "totalCategories": 2,
+            "truncated": false
+          },
+          {
+            "chartId": "advisor",
+            "rows": [
+              {
+                "key": "advisor_A",
+                "label": "advisor A",
+                "recordCount": 1,
+                "unrecoveredAmount": "40.0000"
+              },
+              {
+                "key": "advisor_B",
+                "label": "advisor B",
+                "recordCount": 1,
+                "unrecoveredAmount": "0.0000"
+              },
+              {
+                "key": "advisor_C",
+                "label": "advisor C",
+                "recordCount": 1,
+                "unrecoveredAmount": "50.0000"
+              }
+            ],
+            "series": [
+              {
+                "key": "recordCount",
+                "label": "RO count",
+                "unit": "count"
+              },
+              {
+                "key": "unrecoveredAmount",
+                "label": "Unrecovered shop supplies",
+                "unit": "money",
+                "currency": "USD"
+              }
+            ],
+            "complete": true,
+            "totalCategories": 3,
+            "truncated": false
+          },
+          {
+            "chartId": "monthly",
+            "rows": [
+              {
+                "key": "2024-02",
+                "label": "Feb-2024",
+                "unrecoveredAmount": "90.0000"
+              }
+            ],
+            "series": [
+              {
+                "key": "unrecoveredAmount",
+                "label": "Unrecovered shop supplies",
+                "unit": "money",
+                "currency": "USD"
+              }
+            ],
+            "complete": true,
+            "totalCategories": 1,
+            "truncated": false
+          },
+          {
+            "chartId": "vinOrders",
+            "rows": [
+              {
+                "key": "TEST-VIN-A",
+                "label": "TEST-VIN-A",
+                "recordCount": 2,
+                "flaggedCount": 1
+              },
+              {
+                "key": "TEST-VIN-B",
+                "label": "TEST-VIN-B",
+                "recordCount": 1,
+                "flaggedCount": 1
+              }
+            ],
+            "series": [
+              {
+                "key": "recordCount",
+                "label": "Total records",
+                "unit": "count"
+              },
+              {
+                "key": "flaggedCount",
+                "label": "Partial recovery",
+                "unit": "count"
+              }
+            ],
+            "complete": true,
+            "totalCategories": 2,
+            "truncated": false
+          },
+          {
+            "chartId": "vinLoss",
+            "rows": [
+              {
+                "key": "TEST-VIN-A",
+                "label": "TEST-VIN-A",
+                "unrecoveredAmount": "40.0000"
+              },
+              {
+                "key": "TEST-VIN-B",
+                "label": "TEST-VIN-B",
+                "unrecoveredAmount": "50.0000"
+              }
+            ],
+            "series": [
+              {
+                "key": "unrecoveredAmount",
+                "label": "Unrecovered shop supplies",
+                "unit": "money",
+                "currency": "USD"
+              }
+            ],
+            "complete": true,
+            "totalCategories": 2,
+            "truncated": false
+          },
+          {
+            "chartId": "recurring",
+            "rows": [
+              {
+                "key": "TEST-VIN-A",
+                "label": "TEST-VIN-A",
+                "expectedAmount": "200.0000",
+                "recordCount": 2
+              },
+              {
+                "key": "TEST-VIN-B",
+                "label": "TEST-VIN-B",
+                "expectedAmount": "50.0000",
+                "recordCount": 1
+              }
+            ],
+            "series": [
+              {
+                "key": "expectedAmount",
+                "label": "Expected supplies",
+                "unit": "money",
+                "currency": "USD"
+              },
+              {
+                "key": "recordCount",
+                "label": "RO count",
+                "unit": "count"
+              }
+            ],
+            "complete": true,
+            "totalCategories": 2,
+            "truncated": false
+          }
+        ],
+        "weekdays": [
+          {
+            "weekdayNumber": 1,
+            "label": "Monday",
+            "summary": {
+              "totalSales": "1000.0000",
+              "expectedAmount": "100.0000",
+              "recoveredAmount": "60.0000",
+              "unrecoveredAmount": "40.0000",
+              "recordCount": 1,
+              "flaggedCount": 1,
+              "flaggedPercent": 100.0,
+              "recoveryPercent": 60.0
+            }
+          },
+          {
+            "weekdayNumber": 2,
+            "label": "Tuesday",
+            "summary": {
+              "totalSales": "500.0000",
+              "expectedAmount": "100.0000",
+              "recoveredAmount": "100.0000",
+              "unrecoveredAmount": "0.0000",
+              "recordCount": 1,
+              "flaggedCount": 0,
+              "flaggedPercent": 0.0,
+              "recoveryPercent": 100.0
+            }
+          },
+          {
+            "weekdayNumber": 3,
+            "label": "Wednesday",
+            "summary": {
+              "totalSales": "300.0000",
+              "expectedAmount": "50.0000",
+              "recoveredAmount": "0.0000",
+              "unrecoveredAmount": "50.0000",
+              "recordCount": 1,
+              "flaggedCount": 1,
+              "flaggedPercent": 100.0,
+              "recoveryPercent": 0.0
+            }
+          },
+          {
+            "weekdayNumber": 4,
+            "label": "Thursday",
+            "summary": {
+              "totalSales": "0.0000",
+              "expectedAmount": "0.0000",
+              "recoveredAmount": "0.0000",
+              "unrecoveredAmount": "0.0000",
+              "recordCount": 0,
+              "flaggedCount": 0,
+              "flaggedPercent": 0,
+              "recoveryPercent": 0
+            }
+          },
+          {
+            "weekdayNumber": 5,
+            "label": "Friday",
+            "summary": {
+              "totalSales": "0.0000",
+              "expectedAmount": "0.0000",
+              "recoveredAmount": "0.0000",
+              "unrecoveredAmount": "0.0000",
+              "recordCount": 0,
+              "flaggedCount": 0,
+              "flaggedPercent": 0,
+              "recoveryPercent": 0
+            }
+          },
+          {
+            "weekdayNumber": 6,
+            "label": "Saturday",
+            "summary": {
+              "totalSales": "0.0000",
+              "expectedAmount": "0.0000",
+              "recoveredAmount": "0.0000",
+              "unrecoveredAmount": "0.0000",
+              "recordCount": 0,
+              "flaggedCount": 0,
+              "flaggedPercent": 0,
+              "recoveryPercent": 0
+            }
+          },
+          {
+            "weekdayNumber": 7,
+            "label": "Sunday",
+            "summary": {
+              "totalSales": "0.0000",
+              "expectedAmount": "0.0000",
+              "recoveredAmount": "0.0000",
+              "unrecoveredAmount": "0.0000",
+              "recordCount": 0,
+              "flaggedCount": 0,
+              "flaggedPercent": 0,
+              "recoveryPercent": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Repair-order response",
+      "schema": "#/components/schemas/RecordsResult",
+      "note": "The full test dataset; VIN labels are intentionally fictional. Use real source VIN validation during ingestion.",
+      "value": {
+        "meta": {
+          "requestId": "request_demo_1",
+          "dataVersion": "demo-data-v1",
+          "queryHash": "query_demo_all",
+          "generatedAt": "2026-09-25T10:00:00Z",
+          "sourceUpdatedAt": "2026-09-25T09:59:00Z",
+          "currency": "USD",
+          "reportingTimezone": "UTC",
+          "complete": true,
+          "noData": false,
+          "truncated": false
+        },
+        "items": [
+          {
+            "recordId": "record_demo_A",
+            "roNumber": "DEMO-A",
+            "dealerId": "dealer_A",
+            "dealerCode": "A",
+            "dealerType": null,
+            "make": "Example make",
+            "model": "Example model",
+            "vin": "TEST-VIN-A",
+            "closedDate": "2024-02-05",
+            "managerId": "manager_M",
+            "managerName": "manager M",
+            "advisorId": "advisor_A",
+            "advisorName": "advisor A",
+            "status": "partially_recovered",
+            "currency": "USD",
+            "sourceRevision": "demo-source-1",
+            "unrecoveredPercent": 40.0,
+            "expectedShopSupplies": "100.0000",
+            "actualShopSupplies": "60.0000",
+            "unrecoveredShopSupplies": "40.0000",
+            "laborSales": "600.0000",
+            "partSales": "400.0000",
+            "miscSales": "50.0000",
+            "serviceSales": "1000.0000"
+          },
+          {
+            "recordId": "record_demo_B",
+            "roNumber": "DEMO-B",
+            "dealerId": "dealer_A",
+            "dealerCode": "A",
+            "dealerType": null,
+            "make": "Example make",
+            "model": "Example model",
+            "vin": "TEST-VIN-A",
+            "closedDate": "2024-02-06",
+            "managerId": "manager_M",
+            "managerName": "manager M",
+            "advisorId": "advisor_B",
+            "advisorName": "advisor B",
+            "status": "fully_recovered",
+            "currency": "USD",
+            "sourceRevision": "demo-source-1",
+            "unrecoveredPercent": 0.0,
+            "expectedShopSupplies": "100.0000",
+            "actualShopSupplies": "100.0000",
+            "unrecoveredShopSupplies": "0.0000",
+            "laborSales": "300.0000",
+            "partSales": "200.0000",
+            "miscSales": "25.0000",
+            "serviceSales": "500.0000"
+          },
+          {
+            "recordId": "record_demo_C",
+            "roNumber": "DEMO-C",
+            "dealerId": "dealer_B",
+            "dealerCode": "B",
+            "dealerType": null,
+            "make": "Example make",
+            "model": "Example model",
+            "vin": "TEST-VIN-B",
+            "closedDate": "2024-02-07",
+            "managerId": "manager_N",
+            "managerName": "manager N",
+            "advisorId": "advisor_C",
+            "advisorName": "advisor C",
+            "status": "partially_recovered",
+            "currency": "USD",
+            "sourceRevision": "demo-source-1",
+            "unrecoveredPercent": 100.0,
+            "expectedShopSupplies": "50.0000",
+            "actualShopSupplies": "0.0000",
+            "unrecoveredShopSupplies": "50.0000",
+            "laborSales": "180.0000",
+            "partSales": "120.0000",
+            "miscSales": "15.0000",
+            "serviceSales": "300.0000"
+          }
+        ],
+        "page": {
+          "totalCount": 3,
+          "returnedCount": 3,
+          "nextCursor": null
+        }
+      }
+    },
+    {
+      "name": "Manager status drill request",
+      "schema": "#/components/schemas/ChartQuery",
+      "note": "POST /charts/manager/query. This request retains the parent manager predicate and asks for status aggregates.",
+      "value": {
+        "context": {
+          "filters": {
+            "from": "2024-02-01",
+            "to": "2024-02-13",
+            "managerIds": [],
+            "advisorIds": [],
+            "statuses": [],
+            "vins": [],
+            "recordIds": [],
+            "query": ""
+          },
+          "selections": [
+            {
+              "owner": "manager",
+              "field": "managerId",
+              "value": "manager_M",
+              "depth": 1
+            }
+          ],
+          "dataVersion": "demo-data-v1"
+        },
+        "view": "details",
+        "level": 2,
+        "sort": {
+          "field": "unrecoveredAmount",
+          "direction": "descending"
+        },
+        "page": {
+          "limit": 100,
+          "cursor": null
+        }
+      }
+    },
+    {
+      "name": "Manager status drill response",
+      "schema": "#/components/schemas/ChartQueryResult",
+      "note": "Both status groups total manager M expected 200 / recovered 160 / loss 40. Label and stable key remain distinct.",
+      "value": {
+        "meta": {
+          "requestId": "request_demo_1",
+          "dataVersion": "demo-data-v1",
+          "queryHash": "query_demo_manager_M",
+          "generatedAt": "2026-09-25T10:00:00Z",
+          "sourceUpdatedAt": "2026-09-25T09:59:00Z",
+          "currency": "USD",
+          "reportingTimezone": "UTC",
+          "complete": true,
+          "noData": false,
+          "truncated": false
+        },
+        "chartId": "manager",
+        "view": "details",
+        "level": 2,
+        "rows": [
+          {
+            "key": "partially_recovered",
+            "label": "Partially Recovered",
+            "recordCount": 1,
+            "expectedAmount": "100.0000",
+            "recoveredAmount": "60.0000",
+            "unrecoveredAmount": "40.0000",
+            "laborSales": "600.0000",
+            "partSales": "400.0000",
+            "miscSales": "50.0000"
+          },
+          {
+            "key": "fully_recovered",
+            "label": "Fully Recovered",
+            "recordCount": 1,
+            "expectedAmount": "100.0000",
+            "recoveredAmount": "100.0000",
+            "unrecoveredAmount": "0.0000",
+            "laborSales": "300.0000",
+            "partSales": "200.0000",
+            "miscSales": "25.0000"
+          }
+        ],
+        "series": [
+          {
+            "key": "unrecoveredAmount",
+            "label": "Unrecovered supplies",
+            "unit": "money",
+            "currency": "USD"
+          }
+        ],
+        "page": {
+          "totalCount": 2,
+          "returnedCount": 2,
+          "nextCursor": null
+        }
+      }
+    },
+    {
+      "name": "Create shared-chart snapshot",
+      "schema": "#/components/schemas/SnapshotCreate",
+      "note": "POST /snapshots. The service validates current permissions and returns snapshot_demo_1; do not accept this invented ID in a real system.",
+      "value": {
+        "chartId": "advisor",
+        "context": {
+          "filters": {
+            "from": "2024-02-01",
+            "to": "2024-02-13",
+            "managerIds": [],
+            "advisorIds": [],
+            "statuses": [],
+            "vins": [],
+            "recordIds": [],
+            "query": ""
+          },
+          "selections": [],
+          "dataVersion": "demo-data-v1"
+        },
+        "presentation": {
+          "mode": "bar",
+          "sort": null,
+          "level": 0,
+          "controls": [
+            "title",
+            "filters",
+            "info"
+          ]
+        },
+        "kind": "frozen-result"
+      }
+    },
+    {
+      "name": "Share selected chart",
+      "schema": "#/components/schemas/ShareCreate",
+      "note": "POST /shares with X-CSRF-Token and a unique Idempotency-Key. A second selected channel is another target with its own eligibility and outcome.",
+      "value": {
+        "snapshotId": "snapshot_demo_1",
+        "targets": [
+          {
+            "channel": "in-app",
+            "recipientId": "user_demo_recipient",
+            "targetKind": "person"
+          }
+        ],
+        "comment": "Please review the outstanding supplies amount."
+      }
+    },
+    {
+      "name": "Queued share result",
+      "schema": "#/components/schemas/ShareResult",
+      "note": "202 Accepted queues a durable command. Open this returned conversation; do not show an external message as delivered merely because the API accepted it.",
+      "value": {
+        "shareId": "share_demo_1",
+        "results": [
+          {
+            "recipientId": "user_demo_recipient",
+            "channel": "in-app",
+            "state": "queued",
+            "conversationId": "conversation_demo_1",
+            "messageId": "message_demo_1",
+            "errorCode": null,
+            "reason": null
+          }
+        ]
+      }
+    },
+    {
+      "name": "Conversation after reply",
+      "schema": "#/components/schemas/Conversation",
+      "note": "GET /conversations/conversation_demo_1. Values are from the original sender's authenticated perspective.",
+      "value": {
+        "conversationId": "conversation_demo_1",
+        "channel": "in-app",
+        "title": "Example recipient",
+        "participantIds": [
+          "user_demo_sender",
+          "user_demo_recipient"
+        ],
+        "snapshotIds": [
+          "snapshot_demo_1"
+        ],
+        "lastSequence": 2,
+        "lastReadSequence": 1,
+        "unreadCount": 1,
+        "revision": 3,
+        "updatedAt": "2026-09-25T10:31:00Z",
+        "canSend": true,
+        "canSendFreeText": true,
+        "templateRequired": false,
+        "replyWindowExpiresAt": null,
+        "reason": null
+      }
+    },
+    {
+      "name": "Incoming reply",
+      "schema": "#/components/schemas/Message",
+      "note": "Fictional schema example, not a real message. Persist the provider/app reply before notifying subscribed users.",
+      "value": {
+        "messageId": "message_demo_2",
+        "conversationId": "conversation_demo_1",
+        "sequence": 2,
+        "senderId": "user_demo_recipient",
+        "senderName": "Example recipient",
+        "direction": "incoming",
+        "body": "I will review these orders.",
+        "status": "received",
+        "createdAt": "2026-09-25T10:31:00Z",
+        "updatedAt": "2026-09-25T10:31:00Z",
+        "snapshotId": "snapshot_demo_1",
+        "replyToMessageId": "message_demo_1",
+        "errorCode": null
+      }
+    },
+    {
+      "name": "Message-created event",
+      "schema": "#/components/schemas/Event",
+      "note": "An SSE data payload on GET /events. Re-fetch authorized message/conversation state; on reconnect resume with Last-Event-ID or perform resync.",
+      "value": {
+        "eventId": "event_demo_3",
+        "type": "message.created",
+        "conversationId": "conversation_demo_1",
+        "revision": 3,
+        "messageId": "message_demo_2",
+        "sequence": 2,
+        "occurredAt": "2026-09-25T10:31:00Z"
+      }
+    },
+    {
+      "name": "Read marker",
+      "schema": "#/components/schemas/ReadMarker",
+      "note": "PUT /conversations/conversation_demo_1/read only after the latest reply is visible in the focused thread. Other members and threads remain unchanged.",
+      "value": {
+        "lastReadSequence": 2
+      }
+    },
+    {
+      "name": "Send a follow-up",
+      "schema": "#/components/schemas/MessageCreate",
+      "note": "POST /conversations/conversation_demo_1/messages. Retry the same logical send with the same idempotency key, never duplicate it blindly after a timeout.",
+      "value": {
+        "body": "Thank you. Please check the expected and recovered amounts.",
+        "replyToMessageId": "message_demo_2",
+        "snapshotId": "snapshot_demo_1"
+      }
+    },
+    {
+      "name": "Unavailable WhatsApp freeform recipient",
+      "schema": "#/components/schemas/Recipient",
+      "note": "Eligibility still requires opt-in and allowed business use. Current composer needs explicit template handling before this case is enabled live.",
+      "value": {
+        "recipientId": "recipient_demo_whatsapp",
+        "displayName": "Example WhatsApp customer",
+        "channel": "whatsapp",
+        "targetKind": "person",
+        "eligible": true,
+        "canSendFreeText": false,
+        "templateRequired": true,
+        "replyWindowExpiresAt": "2026-09-24T10:00:00Z",
+        "reason": "An approved template is required outside the customer service window."
+      }
+    },
+    {
+      "name": "Version conflict",
+      "schema": "#/components/schemas/ErrorResponse",
+      "note": "409. Refresh the full coherent query; do not swap a detail response into a dashboard from a different data version.",
+      "value": {
+        "error": {
+          "code": "DATA_VERSION_EXPIRED",
+          "message": "This reporting version is no longer available. Refresh the dashboard.",
+          "requestId": "request_demo_conflict",
+          "retryable": false
+        }
+      }
+    },
+    {
+      "name": "Empty summary",
+      "schema": "#/components/schemas/Summary",
+      "note": "Empty authorized result has zero amounts/counts/rates. Response metadata must also distinguish noData from an error.",
+      "value": {
+        "totalSales": "0.0000",
+        "expectedAmount": "0.0000",
+        "recoveredAmount": "0.0000",
+        "unrecoveredAmount": "0.0000",
+        "recordCount": 0,
+        "flaggedCount": 0,
+        "flaggedPercent": 0,
+        "recoveryPercent": 0
+      }
+    }
+  ],
+  "reconciliationAssertions": {
+    "recordCount": 3,
+    "flaggedCount": 2,
+    "expectedAmount": "250.0000",
+    "recoveredAmount": "160.0000",
+    "unrecoveredAmount": "90.0000",
+    "totalSales": "1800.0000",
+    "recoveryPercent": 64,
+    "donutTotal": "2050.0000",
+    "dealerAUnrecovered": "40.0000",
+    "dealerBUnrecovered": "50.0000",
+    "vinARecordCount": 2,
+    "vinBRecordCount": 1,
+    "managerMUnrecovered": "40.0000"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "status": "passed",
+  "checkedAt": "2026-09-25",
+  "openapiVersion": "3.1.0",
+  "apiPaths": 30,
+  "apiOperations": 36,
+  "schemas": 65,
+  "validatedExamples": 16,
+  "dictionaryFields": 96,
+  "sourceFunctionLinks": 200,
+  "checks": [
+    "OpenAPI document validated with openapi-spec-validator 0.7.2",
+    "Worked examples validated with JSON Schema Draft 2020-12 and format checking",
+    "Three-record decimal fixture reconciles with KPI and chart totals",
+    "CSV fields resolve to contract properties",
+    "Function links point to matching source declaration lines at the reviewed checkout",
+    "Offline HTML local links and section anchors resolve"
+  ],
+  "limits": [
+    "Proposed API only: no deployed backend was tested",
+    "Provider references reviewed; no accounts connected or messages delivered",
+    "Existing business-rule ambiguities remain explicit decisions in the guide"
+  ]
+}
