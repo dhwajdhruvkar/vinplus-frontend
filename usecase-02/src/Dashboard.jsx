@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { ROWS, ROW_BY_ID } from './data/ledger.js'
 import { useStoredState } from './hooks/useStoredState.js'
 import { downloadCSV, exportCSV } from './utils/csv.js'
@@ -39,6 +39,7 @@ export default function Dashboard({ onLogout }) {
   const [notificationsOpen, setNotificationsOpen] = useState(false)
   const [toast, setToast] = useState(null)
   const [fullscreen, setFullscreen] = useState(null)
+  const scrollY = useRef(0)
   const [review, setReview] = useStoredState('vinplus-share-demo-reviews-v1', {}, isRecord)
   const [threads, setThreads] = useStoredState('vinplus-share-demo-jv-threads-v1', {}, isRecord)
   const [notifications, setNotifications] = useStoredState('vinplus-share-demo-notifications-v2', seedNotifications, (v) => (Array.isArray(v) && v.length ? v : undefined))
@@ -51,6 +52,12 @@ export default function Dashboard({ onLogout }) {
 
   const flash = (text) => setToast({ text })
   const closeDrawer = () => setDrawer(null)
+
+  useEffect(() => {
+    const remember = () => { scrollY.current = window.scrollY }
+    document.addEventListener('click', remember, true)
+    return () => document.removeEventListener('click', remember, true)
+  }, [])
 
   useEffect(() => {
     if (!toast) return
@@ -106,6 +113,7 @@ export default function Dashboard({ onLogout }) {
     setPage(0)
     setFullscreen(null)
     closeDrawer()
+    scrollY.current = 0
     window.scrollTo({ top: 0, behavior: 'auto' })
   }
   const sortBy = (key) => {
@@ -171,6 +179,9 @@ export default function Dashboard({ onLogout }) {
   const clearOne = (key) => changeFilters((f) => clearFilter(f, key))
   const table = { page, onPage: setPage, sort, onSort: sortBy }
   const contentKey = [tab, page, sort.key, sort.direction, ...Object.values(filters)].join('|')
+  useLayoutEffect(() => {
+    window.scrollTo(0, scrollY.current)
+  }, [contentKey])
 
   return (
     <>
