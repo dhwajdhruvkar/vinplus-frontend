@@ -14,6 +14,8 @@ import Drawer from './components/Drawer.jsx'
 import ReviewDrawer from './components/ReviewDrawer.jsx'
 import ProfileDrawer from './components/ProfileDrawer.jsx'
 import ChartTooltip from './components/ChartTooltip.jsx'
+import { DATA_MODE } from './api/workflowConfig.js'
+import { useWorkflowData } from './hooks/useWorkflowData.js'
 import Toast from './components/Toast.jsx'
 import PolicyWorkControl from './pages/PolicyWorkControl.jsx'
 import Transactions from './pages/Transactions.jsx'
@@ -46,6 +48,8 @@ export default function Dashboard({ onLogout }) {
   const [profiles, setProfiles] = useStoredState('vinplus-share-demo-profiles-v2', { manager: DEFAULT_PROFILE }, validProfiles)
 
   const rows = baseFilter(filters, review)
+  const workflow = useWorkflowData(filters, DATA_MODE === 'live' && tab === 'overview')
+  const live = DATA_MODE === 'live' ? workflow : null
   const profile = profiles.manager
   const drawerRow = drawer?.kind === 'review' ? ROW_BY_ID.get(drawer.id) || ROWS[0] : null
   const drawerOpen = drawer !== null
@@ -168,7 +172,7 @@ export default function Dashboard({ onLogout }) {
   }
 
   const exportWidget = (id) => {
-    const file = widgetExport(id, rows, filters, review)
+    const file = widgetExport(id, rows, filters, review, live)
     if (!file) return flash('No data to export for this widget')
     downloadCSV(file.filename, file.columns, file.lines)
     flash(`${file.title} exported as CSV`)
@@ -189,7 +193,7 @@ export default function Dashboard({ onLogout }) {
         <Sidebar tab={tab} onGoto={goto} />
         <div className="main">
           <Header
-            title={PAGE_TITLES[tab]} profile={profile} notifications={notifications} notificationsOpen={notificationsOpen}
+            liveNotice={DATA_MODE === 'live'} title={PAGE_TITLES[tab]} profile={profile} notifications={notifications} notificationsOpen={notificationsOpen}
             onToggleNotifications={() => setNotificationsOpen(!notificationsOpen)} onReadAll={readAllNotifications}
             onOpenNotification={openNotification} onProfile={openProfile} onLogout={onLogout}
           />
@@ -197,7 +201,7 @@ export default function Dashboard({ onLogout }) {
           <main className="body" id="content">
             {tab === 'overview' ? (
               <PolicyWorkControl
-                key={contentKey} rows={rows} filters={filters} review={review} threads={threads} table={table} fullscreen={fullscreen} onFullscreen={setFullscreen}
+                key={contentKey} rows={rows} filters={filters} review={review} threads={threads} table={table} fullscreen={fullscreen} live={live} onFullscreen={setFullscreen}
                 onSelect={select} onClearOne={clearOne} onOpenReview={openReview} onExport={exportRows} onExportWidget={exportWidget} onViewAll={() => goto('transactions')}
               />
             ) : (
@@ -218,7 +222,7 @@ export default function Dashboard({ onLogout }) {
         )}
       </Drawer>
       <Toast toast={toast} />
-      <ChartTooltip rows={rows} filters={filters} review={review} />
+      <ChartTooltip rows={rows} filters={filters} review={review} live={live} />
     </>
   )
 }

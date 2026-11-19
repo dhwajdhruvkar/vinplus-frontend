@@ -9,7 +9,10 @@ export const WIDGETS = {
     title: 'Monthly Policy Expense Trend',
     info: 'Displays monthly policy expense movements over the selected date range.',
     columns: ['Month', 'Net Policy Expense'],
-    lines: (rows) => MONTHS.map((m) => [`${m} 2026`, money(sumNet(rows.filter((r) => r.month === m)))]),
+    lines: (rows, filters, review, live) => MONTHS.map((m, i) => {
+      const value = live ? live.trend.data[i] : sumNet(rows.filter((r) => r.month === m))
+      return [`${m} 2026`, value == null ? '' : money(value)]
+    }),
   },
   department: {
     title: 'Expense by Department',
@@ -66,14 +69,14 @@ export const WIDGETS = {
   },
 }
 
-export function widgetExport(id, rows, filters, review) {
-  if (!rows.length) return null
+export function widgetExport(id, rows, filters, review, live) {
+  if (id === 'trend' && live ? live.trend.status !== 'success' : !rows.length) return null
   const widget = WIDGETS[id]
   const slug = widget.title.toLowerCase().replace(/×/g, 'x').replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '')
   return {
     title: widget.title,
     columns: widget.columns,
-    lines: widget.lines(rows, filters, review),
+    lines: widget.lines(rows, filters, review, live),
     filename: `vinplus_${slug}_${filters.dateStart}_to_${filters.dateEnd}.csv`,
   }
 }

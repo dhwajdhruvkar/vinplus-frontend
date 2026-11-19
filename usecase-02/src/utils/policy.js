@@ -92,7 +92,10 @@ export function monthComparison(filters, review) {
 
 export function momValue(current, previous) {
   if (previous === 0) return { label: current === 0 ? '0.0%' : 'N/A', direction: 0, zeroBaseline: current !== 0 }
-  const change = ((current - previous) / Math.abs(previous)) * 100
+  return changeModel(((current - previous) / Math.abs(previous)) * 100)
+}
+
+export function changeModel(change) {
   const normal = Math.abs(change) < 0.05 ? 0 : change
   return {
     label: (normal > 0 ? '+' : normal < 0 ? '−' : '') + Math.abs(normal).toFixed(1) + '%',

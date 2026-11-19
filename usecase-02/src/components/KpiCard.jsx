@@ -27,14 +27,17 @@ function Spark({ index, color }) {
   )
 }
 
-export default function KpiCard({ index, title, value, red, change, comparisonWindow, thresholdLabel }) {
+const STATE_HINTS = { loading: 'Loading…', empty: 'No data for these filters', error: 'Unavailable' }
+
+export default function KpiCard({ index, title, value, red, change, comparisonWindow, thresholdLabel, state, stateMessage }) {
   const isReview = index === 5
   return (
     <div
       className={`kpi ${red ? 'is-red' : 'is-teal'} kpiInteractive`}
       role="group"
-      title={isReview ? `High-value rule: ${thresholdLabel}` : `Month over month: ${comparisonWindow}`}
-      aria-label={`${title}: ${value}, ${isReview ? thresholdLabel : 'MoM ' + change.label}`}
+      title={state === 'error' ? stateMessage : isReview ? `High-value rule: ${thresholdLabel}` : `Month over month: ${comparisonWindow}`}
+      aria-busy={state === 'loading' || undefined}
+      aria-label={`${title}: ${value}, ${state ? STATE_HINTS[state] : isReview ? thresholdLabel : 'MoM ' + change.label}`}
     >
       <div className="label">
         <span className="metricIcon">
@@ -45,7 +48,7 @@ export default function KpiCard({ index, title, value, red, change, comparisonWi
       <div className="value">{value}</div>
       <Spark index={index} color={red ? '#ff2b56' : '#00ddc6'} />
       <div className="hint">
-        {isReview ? <span>{thresholdLabel}</span> : (
+        {state ? <span>{STATE_HINTS[state]}</span> : isReview ? <span>{thresholdLabel}</span> : (
           <>
             <b style={{ color: CHANGE_COLORS[change.direction] }}>{change.label}</b>
             <span>{' ' + (change.zeroBaseline ? 'no prior-month baseline' : 'vs. previous month')}</span>

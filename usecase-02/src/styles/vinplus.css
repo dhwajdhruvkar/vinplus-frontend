@@ -1263,3 +1263,5 @@ body{background:#020711;color:#f5f7fd}
 #content .sourceKpiCard .sourceBreakdownHead .sourceBreakdownTitle{margin:0!important}
 .sourceFilterControls .widgetTools{margin-top:0;align-self:center}
 .panelhead .row .widgetToolButton{align-self:center}
+
+#content .tri.topcharts>.panel:first-child .graphEmpty{min-height:201px}

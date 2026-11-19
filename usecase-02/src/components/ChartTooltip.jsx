@@ -6,7 +6,7 @@ import { FLAG_SPEC, baseFilter, matchFlag, sourceScope, sumBy, sumNet } from '..
 
 const MATRIX_NOTE = 'Click to filter all charts by department and month.'
 
-function tooltipModel(event, rows, filters, review) {
+function tooltipModel(event, rows, filters, review, live) {
   const target = event.target
   if (target.closest('.kpiInteractive,.sourceKpiLeft .metricClickable')) return null
 
@@ -27,8 +27,8 @@ function tooltipModel(event, rows, filters, review) {
   node = target.closest('[data-chart-trend]')
   if (node) {
     const i = trendMonthIndex(node, event.clientX)
-    const value = sumNet(rows.filter((x) => x.month === MONTHS[i]))
-    return { caption: 'Monthly Policy Expense Trend', label: `${MONTHS[i]} 2026`, value: fmt(value), note: 'Monthly net policy expense · Click to filter by this month.', color: '#ff315e' }
+    const value = live ? live.trend.data?.[i] : sumNet(rows.filter((x) => x.month === MONTHS[i]))
+    return { caption: 'Monthly Policy Expense Trend', label: `${MONTHS[i]} 2026`, value: value == null ? '—' : fmt(value), note: 'Monthly net policy expense · Click to filter by this month.', color: '#ff315e' }
   }
   node = target.closest('[data-overview-journal]')
   if (node) {
@@ -52,13 +52,13 @@ function tooltipModel(event, rows, filters, review) {
   return null
 }
 
-export default function ChartTooltip({ rows, filters, review }) {
+export default function ChartTooltip({ rows, filters, review, live }) {
   const [tip, setTip] = useState(null)
   const rootRef = useRef(null)
 
   useEffect(() => {
     const move = (e) => {
-      const model = tooltipModel(e, rows, filters, review)
+      const model = tooltipModel(e, rows, filters, review, live)
       setTip(model && { model, x: e.clientX || 0, y: e.clientY || 0 })
     }
     const hide = () => setTip(null)
@@ -70,7 +70,7 @@ export default function ChartTooltip({ rows, filters, review }) {
       document.documentElement.removeEventListener('pointerleave', hide)
       window.removeEventListener('scroll', hide, { capture: true })
     }
-  }, [rows, filters, review])
+  }, [rows, filters, review, live])
 
   useLayoutEffect(() => {
     if (!tip) return

@@ -24,7 +24,7 @@ const KPIS = [
   { title: 'High-Value Review Candidates', metric: 'high', stat: 'review', format: count, red: true },
 ]
 
-export default function PolicyWorkControl({ rows, filters, review, threads, table, fullscreen, onFullscreen, onSelect, onClearOne, onOpenReview, onExport, onExportWidget, onViewAll }) {
+export default function PolicyWorkControl({ rows, filters, review, threads, table, fullscreen, live, onFullscreen, onSelect, onClearOne, onOpenReview, onExport, onExportWidget, onViewAll }) {
   const stats = getStats(rows)
   const comparison = monthComparison(filters, review)
   const thresholdLabel = 'GL posting ≥ ' + fmt(HIGH_VALUE_THRESHOLD)
@@ -33,8 +33,22 @@ export default function PolicyWorkControl({ rows, filters, review, threads, tabl
     onOpenReview(id)
   }
 
+  const kpiProps = (stat, index, format) => {
+    if (!live) return { value: format(stats[stat]), change: momValue(comparison.current[stat], comparison.prior[stat]), comparisonWindow: comparison.window }
+    const { values, mom } = live
+    const failing = values.status !== 'success' ? values : index < 5 && mom.status !== 'success' ? mom : null
+    const value = values.status === 'success' ? values.data[stat] : null
+    return {
+      value: value == null ? '—' : format(value),
+      change: mom.status === 'success' ? mom.data[stat] : undefined,
+      comparisonWindow: mom.data?.window || 'Backend comparison period not specified',
+      state: failing?.status, stateMessage: failing?.error,
+    }
+  }
+  const trend = live?.trend
+
   const bodies = {
-    trend: <TrendChart rows={rows} onSelect={onSelect} />,
+    trend: <TrendChart rows={rows} values={trend?.status === 'success' ? trend.data : undefined} state={trend && trend.status !== 'success' ? trend.status : undefined} message={trend?.error} onSelect={onSelect} />,
     department: <DonutChart rows={rows} activeDept={filters.dept} onSelect={onSelect} />,
     journal: <JournalBars rows={rows} activeJournal={filters.journal} onSelect={onSelect} />,
     matrix: <ReviewMatrix rows={rows} onSelect={onSelect} />,
@@ -51,8 +65,7 @@ export default function PolicyWorkControl({ rows, filters, review, threads, tabl
       <div className="kpis">
         {KPIS.map(({ title, metric, stat, format, red }, index) => (
           <KpiCard
-            key={metric} index={index} title={title} red={red} value={format(stats[stat])}
-            change={momValue(comparison.current[stat], comparison.prior[stat])} comparisonWindow={comparison.window} thresholdLabel={thresholdLabel}
+            key={metric} index={index} title={title} red={red} thresholdLabel={thresholdLabel} {...kpiProps(stat, index, format)}
           />
         ))}
       </div>

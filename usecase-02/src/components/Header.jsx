@@ -1,7 +1,7 @@
 import { companyLabel, useCompany } from '../company/companyContext.js'
 import { displayTime } from '../utils/format.js'
 
-export default function Header({ title, profile, notifications, notificationsOpen, onToggleNotifications, onReadAll, onOpenNotification, onProfile, onLogout }) {
+export default function Header({ liveNotice, title, profile, notifications, notificationsOpen, onToggleNotifications, onReadAll, onOpenNotification, onProfile, onLogout }) {
   const company = useCompany()
   const unread = notifications.filter((n) => !n.read).length
   const initials = (profile.name || profile.username || 'DM').trim().split(/\s+/).map((s) => s[0] || '').slice(0, 2).join('').toUpperCase()
@@ -13,6 +13,7 @@ export default function Header({ title, profile, notifications, notificationsOpe
         <div className="sub">{`VINPlus  /  ${company.companyName}  /  ${companyLabel(company)}`}</div>
       </div>
       <div className="actions">
+        {liveNotice && <span className="pill gold">Live: KPIs &amp; trend · other widgets demo</span>}
         <div className="headerControls">
           <button type="button" className="iconButton" id="notificationButton" aria-label="Notifications" onClick={onToggleNotifications}>
             <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" /><path d="M10 21h4" /></svg>
