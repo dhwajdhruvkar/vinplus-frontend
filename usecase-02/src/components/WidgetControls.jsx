@@ -14,11 +14,15 @@ export function WidgetInfo({ title, text }) {
   )
 }
 
+export function ExportIcon() {
+  return <svg {...icon}><path d="M12 3v12" /><path d="m7 10 5 5 5-5" /><path d="M5 20h14" /></svg>
+}
+
 export function WidgetTools({ title, onExport, onFullscreen, onClose }) {
   return (
     <div className="widgetTools">
       <button type="button" className="widgetToolButton" title="Export CSV" aria-label={`Export ${title} as CSV`} onClick={onExport}>
-        <svg {...icon}><path d="M12 3v12" /><path d="m7 10 5 5 5-5" /><path d="M5 20h14" /></svg>
+        <ExportIcon />
       </button>
       {onClose ? (
         <button type="button" className="widgetToolButton" title="Close full screen" aria-label="Close full screen" onClick={onClose}>

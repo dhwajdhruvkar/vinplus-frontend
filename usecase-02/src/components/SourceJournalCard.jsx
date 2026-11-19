@@ -3,6 +3,8 @@ import { fmt } from '../utils/format.js'
 import { distinctRefs, sourceScope, sumBy, sumNet } from '../utils/policy.js'
 import { WidgetInfo, WidgetTools } from './WidgetControls.jsx'
 
+const CARD_INFO = 'Shows policy charges for the selected department: net GL charges, distinct references and the source-journal breakdown.'
+
 export function SourceJournalBars({ rows, filters, onSelect }) {
   const { scoped } = sourceScope(rows, filters)
   const bySource = sumBy(scoped, 'journal')
@@ -30,13 +32,14 @@ export default function SourceJournalCard({ rows, filters, widget, onSelect, onE
   return (
     <section className="sourceKpiCard belowFold" aria-label="Source Journal to Charged Department KPIs">
       <div className="sourceKpiHead">
-        <div><h3>Source Journal → Charged Department</h3><div className="sub">Policy charges by selected department and accounting journal</div></div>
+        <div><div className="panelTitle sourceCardTitle"><h3>Source Journal → Charged Department</h3><WidgetInfo title="Source Journal → Charged Department" text={CARD_INFO} /></div><div className="sub">Policy charges by selected department and accounting journal</div></div>
         <div className="sourceFilterControls">
           <div className="sourceDepts" role="group" aria-label="Choose charged department">
             {DEPTS.map((d) => (
               <button key={d} type="button" className={filters.dept === d ? 'active' : ''} aria-pressed={filters.dept === d} onClick={() => onSelect('dept', d)}>{d}</button>
             ))}
           </div>
+          <WidgetTools title="Source Journal Breakdown" onExport={onExport} onFullscreen={onFullscreen} />
         </div>
       </div>
       <div className="sourceKpiBody">
@@ -65,7 +68,6 @@ export default function SourceJournalCard({ rows, filters, widget, onSelect, onE
               <div className="sourceBreakdownTitle">Source Journal Breakdown</div>
               <WidgetInfo title="Source Journal Breakdown" text={widget.info} />
             </div>
-            <WidgetTools title="Source Journal Breakdown" onExport={onExport} onFullscreen={onFullscreen} />
           </div>
           <SourceJournalBars rows={rows} filters={filters} onSelect={onSelect} />
         </div>

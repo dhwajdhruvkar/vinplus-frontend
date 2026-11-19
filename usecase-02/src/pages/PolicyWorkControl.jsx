@@ -9,6 +9,7 @@ import PriorityInvestigation from '../components/PriorityInvestigation.jsx'
 import SourceJournalCard, { SourceJournalBars } from '../components/SourceJournalCard.jsx'
 import TransactionTable from '../components/TransactionTable.jsx'
 import WidgetFullscreen from '../components/WidgetFullscreen.jsx'
+import { ExportIcon } from '../components/WidgetControls.jsx'
 import { amt, fmt } from '../utils/format.js'
 import { FLAG_SPEC, HIGH_VALUE_THRESHOLD, baseFilter, distinctRefs, getStats, momValue, monthComparison, sumNet } from '../utils/policy.js'
 import { WIDGETS } from '../utils/widgets.js'
@@ -78,7 +79,7 @@ export default function PolicyWorkControl({ rows, filters, review, threads, tabl
       />
       <Panel
         title="Policy Transaction Review Queue" className="belowFold"
-        actions={<div className="row"><button className="btn" onClick={onExport}>Export CSV</button><button className="btn primary" onClick={onViewAll}>View all transactions</button></div>}
+        actions={<div className="row"><button className="btn exportIconBtn" title="Export CSV" aria-label="Export CSV" onClick={onExport}><ExportIcon /></button><button className="btn primary" onClick={onViewAll}>View all transactions</button></div>}
       >
         <TransactionTable {...table} rows={rows} review={review} threads={threads} limit={10} compact onOpen={onOpenReview} />
       </Panel>
