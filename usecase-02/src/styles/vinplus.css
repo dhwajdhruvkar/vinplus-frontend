@@ -1243,3 +1243,12 @@ body{background:#020711;color:#f5f7fd}
 #content .tri.topcharts>.panel:nth-child(3) .journalBar>span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .widgetFullscreen .journalBar{grid-template-columns:160px minmax(40px,1fr) 130px;gap:14px;height:auto;margin:8px 0}
 .widgetFullscreen .journalBar>span{white-space:nowrap}
+
+/* Manager review: one vertical rhythm, textarea and Send button aligned to the same edges */
+.jvManagerReview{display:flex;flex-direction:column;gap:12px}
+.jvManagerReview>h3,.jvManagerReview>.jvCommentRule,.jvManagerReview>.formLabel,.jvManagerReview .noteTextarea,.jvManagerReview>.drawerActions,.jvManagerReview>.jvReplies{margin:0}
+.jvManagerReview>.formLabel{margin-bottom:-6px}
+.jvManagerReview .noteTextarea{display:block;width:100%;box-sizing:border-box;resize:vertical}
+.jvManagerReview>.drawerActions{justify-content:flex-end}
+.jvManagerReview>.drawerActions .btn{min-width:96px}
+.jvManagerReview>.jvReplies{padding-top:14px}
