@@ -79,7 +79,7 @@ export default function PolicyWorkControl({ rows, filters, review, threads, tabl
       />
       <Panel
         title="Policy Transaction Review Queue" className="belowFold"
-        actions={<div className="row"><button className="btn exportIconBtn" title="Export CSV" aria-label="Export CSV" onClick={onExport}><ExportIcon /></button><button className="btn primary" onClick={onViewAll}>View all transactions</button></div>}
+        actions={<div className="row"><button className="widgetToolButton" title="Export CSV" aria-label="Export CSV" onClick={onExport}><ExportIcon /></button><button className="btn primary" onClick={onViewAll}>View all transactions</button></div>}
       >
         <TransactionTable {...table} rows={rows} review={review} threads={threads} limit={10} compact onOpen={onOpenReview} />
       </Panel>
