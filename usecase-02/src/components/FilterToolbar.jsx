@@ -33,7 +33,7 @@ export default function FilterToolbar({ filters, chips, onFilter, onDate, onClea
         <FilterSelect id="journal" label="Journal" value={filters.journal} onChange={(v) => onFilter('journal', v)} allLabel="All journals" options={JOURNALS} />
         <FilterSelect id="reviewStatus" label="Review status" value={filters.status} onChange={(v) => onFilter('status', v)} allLabel="All statuses" options={REVIEW_STATUSES} />
       </div>
-      <div className="filterFooter"><b>FILTERS</b><button className="clearBtn" id="reset" onClick={() => onClearOne('all')}>Clear all</button></div>
+      <div className="filterFooter"><b>FILTERS</b></div>
       <div className="associationBar" id="associationBar" aria-label="Active dashboard selections">
         {chips.length > 0 && (
           <>

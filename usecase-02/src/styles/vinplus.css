@@ -1237,3 +1237,9 @@ body{background:#020711;color:#f5f7fd}
 
 /* Neutral fallback when a company logo is unavailable */
 .crestFallback{display:grid;place-items:center;width:64px;height:64px;border:2px solid #52657c;border-radius:50%;background:#14233a;color:#fff;font-size:28px;font-weight:800}
+
+/* Expense by Journal: aligned label, bar and value columns with uniform row height */
+#content .tri.topcharts>.panel:nth-child(3) .journalBar{grid-template-columns:112px minmax(40px,1fr) 92px;gap:8px;height:24px;margin:7px -3px}
+#content .tri.topcharts>.panel:nth-child(3) .journalBar>span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.widgetFullscreen .journalBar{grid-template-columns:160px minmax(40px,1fr) 130px;gap:14px;height:auto;margin:8px 0}
+.widgetFullscreen .journalBar>span{white-space:nowrap}
