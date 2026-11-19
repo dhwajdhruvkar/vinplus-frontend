@@ -1,62 +1,80 @@
-import { MONTHS } from '../data/ledger.js'
 import { changeModel } from '../utils/policy.js'
 import { WorkflowError } from './workflowClient.js'
 
-// Every field the UI needs. All entries stay null until the backend supplies a response sample.
-// Paths are dot-separated property names inside the response JSON.
-export const RESPONSE_MAPPING = {
-  // TODO(backend): response sample for Widget Values; do the six KPIs (including High-Value candidates) come from this workflow?
-  values: null, // { net, deb, credits, lines, refs, review } -> path of each number
-  // TODO(backend): response sample for Widget MOM; percentage or current/previous pair? comparison period? is there a High-Value MoM?
-  mom: null, // { net, deb, credits, lines, refs, window } -> path of each month-over-month percentage, and of the period text
-  // TODO(backend): response sample for Widget Trend; month keys and coverage (Jan-Oct 2026?)
-  trend: null, // { rows, month, amount } -> path of the array, then the month and amount keys inside each item
+// Column names exactly as returned in body.data.data.metaData[].colName.
+export const COLUMNS = {
+  values: {
+    net: 'Net Policy Expense', deb: 'Gross Policy Debits', credits: 'Credits / Offsets',
+    lines: 'Policy Posting Entries', refs: 'Unique References', review: 'High-Value Review Candidates',
+  },
+  // The backend supplies no High-Value Review Candidates MoM, so it is intentionally absent here.
+  mom: {
+    net: 'MoM - Net Policy Expense', deb: 'MoM - Gross Policy Debits', credits: 'MoM - Credits / Offsets',
+    lines: 'MoM - Policy Posting Entries', refs: 'MoM - Unique References',
+  },
+  trend: {
+    net: 'Net Policy Expense Trend', deb: 'Gross Policy Debits Trend', credits: 'Credits / Offsets Trend',
+    lines: 'Policy Posting Entries Trend', refs: 'Unique References Trend', review: 'High-Value Review Candidates Trend',
+  },
+  trendMonth: 'months',
 }
 
-const MAPPING_PENDING = 'Response mapping not configured — awaiting backend response sample'
-
-const pick = (json, path) => path.split('.').reduce((node, key) => (node == null ? undefined : node[key]), json)
-
-function toNumber(value) {
-  if (value == null || value === '') return null
-  const n = Number(value)
-  return Number.isFinite(n) ? n : null
+const fail = (message) => {
+  throw new WorkflowError(message)
 }
 
-const isEmptyPayload = (json) => json == null || (Array.isArray(json) ? json.length === 0 : typeof json === 'object' && Object.keys(json).length === 0)
+function toNumber(value, column) {
+  if (value == null) return null
+  const n = typeof value === 'string' && value.trim() === '' ? NaN : Number(value)
+  return Number.isFinite(n) ? n : fail(`Invalid numeric value for "${column}"`)
+}
 
-function mapped(json, section) {
-  if (!RESPONSE_MAPPING[section]) throw new WorkflowError(MAPPING_PENDING)
-  return isEmptyPayload(json) ? null : RESPONSE_MAPPING[section]
+// Validates the envelope and returns { rows, index(columnName) }, or null when the result set is empty.
+function readResultSet(json) {
+  if (!json || typeof json !== 'object') fail('Unexpected response format')
+  if (String(json.status?.code) !== '200' || json.status?.value !== 'success' || json.error !== false) fail('Backend reported an unsuccessful response')
+  const result = json.data?.data
+  if (!Array.isArray(result?.resultSet) || !Array.isArray(result?.metaData)) fail('Unexpected response format')
+  if (!result.resultSet.length) return null
+  const index = (name) => {
+    const column = result.metaData.find((m) => m?.colName === name)
+    return Number.isInteger(column?.colIndex) ? column.colIndex : fail(`Response is missing the expected column "${name}"`)
+  }
+  return { rows: result.resultSet, index }
+}
+
+function readColumns(json, columns) {
+  const result = readResultSet(json)
+  if (!result) return null
+  const positions = Object.fromEntries(Object.entries(columns).map(([key, name]) => [key, result.index(name)]))
+  return { rows: result.rows, positions }
 }
 
 export function normalizeValues(json) {
-  const mapping = mapped(json, 'values')
-  if (!mapping) return { empty: true }
-  return Object.fromEntries(['net', 'deb', 'credits', 'lines', 'refs', 'review'].map((stat) => [stat, toNumber(pick(json, mapping[stat]))]))
+  const table = readColumns(json, COLUMNS.values)
+  if (!table) return { empty: true }
+  return Object.fromEntries(Object.entries(table.positions).map(([key, position]) => [key, toNumber(table.rows[0][position], COLUMNS.values[key])]))
 }
 
 export function normalizeMom(json) {
-  const mapping = mapped(json, 'mom')
-  if (!mapping) return { empty: true }
-  const change = (stat) => {
-    const percent = toNumber(pick(json, mapping[stat]))
+  const table = readColumns(json, COLUMNS.mom)
+  if (!table) return { empty: true }
+  const change = (key) => {
+    const percent = toNumber(table.rows[0][table.positions[key]], COLUMNS.mom[key])
     return percent == null ? { label: '—', direction: 0, zeroBaseline: false } : changeModel(percent)
   }
-  const window = pick(json, mapping.window)
-  return { net: change('net'), deb: change('deb'), credits: change('credits'), lines: change('lines'), refs: change('refs'), window: typeof window === 'string' ? window : null }
+  return { net: change('net'), deb: change('deb'), credits: change('credits'), lines: change('lines'), refs: change('refs'), window: null }
 }
 
 export function normalizeTrend(json) {
-  const mapping = mapped(json, 'trend')
-  if (!mapping) return { empty: true }
-  const items = pick(json, mapping.rows)
-  if (!Array.isArray(items)) throw new WorkflowError('Unexpected response format')
-  const values = MONTHS.map(() => null)
-  for (const item of items) {
-    const index = MONTHS.findIndex((m) => String(item[mapping.month]).trim().toLowerCase().startsWith(m.toLowerCase()))
-    if (index < 0 || values[index] !== null) throw new WorkflowError('Trend periods do not match the chart axis')
-    values[index] = toNumber(item[mapping.amount])
-  }
-  return values
+  const table = readColumns(json, { month: COLUMNS.trendMonth, ...COLUMNS.trend })
+  if (!table) return { empty: true }
+  const rows = table.rows.map((row) => {
+    if (!Array.isArray(row) || typeof row[table.positions.month] !== 'string') fail('Unexpected response format')
+    return {
+      month: row[table.positions.month],
+      ...Object.fromEntries(Object.keys(COLUMNS.trend).map((key) => [key, toNumber(row[table.positions[key]], COLUMNS.trend[key])])),
+    }
+  })
+  return { rows }
 }

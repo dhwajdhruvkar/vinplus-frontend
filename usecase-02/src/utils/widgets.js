@@ -4,15 +4,17 @@ import { accountLabel, baseFilter, FLAG_SPEC, matchFlag, rankPriority, status, s
 const money = (n) => Number(n.toFixed(2))
 const share = (value, total) => (((value || 0) / (total || 1)) * 100).toFixed(1)
 
+const liveTrendExport = (trendRows) => ({
+  columns: ['Month', 'Net Policy Expense', 'Gross Policy Debits', 'Credits / Offsets', 'Policy Posting Entries', 'Unique References', 'High-Value Review Candidates'],
+  lines: trendRows.map((r) => [r.month, r.net, r.deb, r.credits, r.lines, r.refs, r.review]),
+})
+
 export const WIDGETS = {
   trend: {
     title: 'Monthly Policy Expense Trend',
     info: 'Displays monthly policy expense movements over the selected date range.',
     columns: ['Month', 'Net Policy Expense'],
-    lines: (rows, filters, review, live) => MONTHS.map((m, i) => {
-      const value = live ? live.trend.data[i] : sumNet(rows.filter((r) => r.month === m))
-      return [`${m} 2026`, value == null ? '' : money(value)]
-    }),
+    lines: (rows) => MONTHS.map((m) => [`${m} 2026`, money(sumNet(rows.filter((r) => r.month === m)))]),
   },
   department: {
     title: 'Expense by Department',
@@ -75,8 +77,7 @@ export function widgetExport(id, rows, filters, review, live) {
   const slug = widget.title.toLowerCase().replace(/×/g, 'x').replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '')
   return {
     title: widget.title,
-    columns: widget.columns,
-    lines: widget.lines(rows, filters, review, live),
+    ...(id === 'trend' && live ? liveTrendExport(live.trend.data.rows) : { columns: widget.columns, lines: widget.lines(rows, filters, review) }),
     filename: `vinplus_${slug}_${filters.dateStart}_to_${filters.dateEnd}.csv`,
   }
 }

@@ -26,9 +26,10 @@ function tooltipModel(event, rows, filters, review, live) {
   }
   node = target.closest('[data-chart-trend]')
   if (node) {
-    const i = trendMonthIndex(node, event.clientX)
-    const value = live ? live.trend.data?.[i] : sumNet(rows.filter((x) => x.month === MONTHS[i]))
-    return { caption: 'Monthly Policy Expense Trend', label: `${MONTHS[i]} 2026`, value: value == null ? '—' : fmt(value), note: 'Monthly net policy expense · Click to filter by this month.', color: '#ff315e' }
+    const liveRows = live?.trend.data?.rows ?? []
+    const i = trendMonthIndex(node, event.clientX, live ? liveRows.length : 10)
+    const value = live ? liveRows[i]?.net : sumNet(rows.filter((x) => x.month === MONTHS[i]))
+    return { caption: 'Monthly Policy Expense Trend', label: live ? liveRows[i]?.month ?? '—' : `${MONTHS[i]} 2026`, value: value == null ? '—' : fmt(value), note: 'Monthly net policy expense · Click to filter by this month.', color: '#ff315e' }
   }
   node = target.closest('[data-overview-journal]')
   if (node) {

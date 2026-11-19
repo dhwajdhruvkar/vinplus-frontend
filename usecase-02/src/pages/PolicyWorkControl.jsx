@@ -48,7 +48,7 @@ export default function PolicyWorkControl({ rows, filters, review, threads, tabl
   const trend = live?.trend
 
   const bodies = {
-    trend: <TrendChart rows={rows} values={trend?.status === 'success' ? trend.data : undefined} state={trend && trend.status !== 'success' ? trend.status : undefined} message={trend?.error} onSelect={onSelect} />,
+    trend: <TrendChart rows={rows} series={trend?.status === 'success' ? trend.data.rows.map((r) => ({ month: r.month, value: r.net })) : undefined} state={trend && trend.status !== 'success' ? trend.status : undefined} message={trend?.error} onSelect={onSelect} />,
     department: <DonutChart rows={rows} activeDept={filters.dept} onSelect={onSelect} />,
     journal: <JournalBars rows={rows} activeJournal={filters.journal} onSelect={onSelect} />,
     matrix: <ReviewMatrix rows={rows} onSelect={onSelect} />,

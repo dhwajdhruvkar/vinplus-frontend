@@ -1,0 +1,82 @@
+{
+  "version": {
+    "name": "vanilla",
+    "version": "Lumenore Studio"
+  },
+  "status": {
+    "code": "200",
+    "value": "success"
+  },
+  "data": {
+    "data": {
+      "queryInfo": {
+        "totalRows": 10,
+        "type": "selected"
+      },
+      "resultSet": [
+        ["Jan", 107554.79000000001, 117451.23000000001, 9896.44, 327, 247, 7],
+        ["Feb", 95646.42, 101870.65, 6224.23, 303, 217, 5],
+        ["Mar", 71061.47, 93437.79000000001, 22376.319999999996, 306, 239, 3],
+        ["Apr", 114208.07, 125437.11, 11229.04, 312, 240, 5],
+        ["May", 140934.63, 150524.58, 9589.95, 322, 238, 6],
+        ["Jun", 38087.25, 98747.45, 60660.2, 315, 213, 3],
+        ["Jul", 133343.18, 139201.35, 5858.17, 305, 226, 7],
+        ["Aug", 70344.67, 81549.48, 11204.810000000001, 295, 208, 3],
+        ["Sep", 102108.66, 113014.41, 10905.750000000002, 295, 223, 5],
+        ["Oct", 119688.04, 130961.07999999999, 11273.04, 286, 227, 5]
+      ],
+      "metaData": [
+        {
+          "colIndex": 0,
+          "colName": "months",
+          "colType": "Varchar",
+          "colId": "months",
+          "cryptographicFunction": "NONE"
+        },
+        {
+          "colIndex": 1,
+          "colName": "Net Policy Expense Trend",
+          "colType": "Float",
+          "colId": "Net Policy Expense Trend",
+          "cryptographicFunction": "NONE"
+        },
+        {
+          "colIndex": 2,
+          "colName": "Gross Policy Debits Trend",
+          "colType": "Float",
+          "colId": "Gross Policy Debits Trend",
+          "cryptographicFunction": "NONE"
+        },
+        {
+          "colIndex": 3,
+          "colName": "Credits / Offsets Trend",
+          "colType": "Float",
+          "colId": "Credits / Offsets Trend",
+          "cryptographicFunction": "NONE"
+        },
+        {
+          "colIndex": 4,
+          "colName": "Policy Posting Entries Trend",
+          "colType": "Integer",
+          "colId": "Policy Posting Entries Trend",
+          "cryptographicFunction": "NONE"
+        },
+        {
+          "colIndex": 5,
+          "colName": "Unique References Trend",
+          "colType": "Integer",
+          "colId": "Unique References Trend",
+          "cryptographicFunction": "NONE"
+        },
+        {
+          "colIndex": 6,
+          "colName": "High-Value Review Candidates Trend",
+          "colType": "Integer",
+          "colId": "High-Value Review Candidates Trend",
+          "cryptographicFunction": "NONE"
+        }
+      ]
+    }
+  },
+  "error": false
+}

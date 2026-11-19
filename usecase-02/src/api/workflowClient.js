@@ -2,11 +2,20 @@ import { APP_ID, BASE_URL, CREDENTIALS, WORKFLOW_HEADERS } from './workflowConfi
 
 export class WorkflowError extends Error {}
 
-// UI filter key -> workflow variable name. Spellings of values are passed through exactly as shown in the UI.
+// UI filter key -> workflow variable name. Selections are passed through exactly as shown in the UI.
 const VARIABLE_BY_FILTER = { brand: 'Brand', dept: 'Department', journal: 'Journal', status: 'Review_Status' }
+const DATE_VARIABLE_BY_FILTER = { dateStart: 'Min_Date', dateEnd: 'Max_Date' }
 
-export const toWorkflowVariables = (filters) =>
-  Object.fromEntries(Object.entries(VARIABLE_BY_FILTER).map(([key, name]) => [name, filters[key] === 'all' ? '' : filters[key]]))
+// 'YYYY-MM-DD' -> 'DD-MM-YYYY' by string handling only, so time zones cannot shift the day.
+export const toWorkflowDate = (isoDate) => {
+  const [year, month, day] = String(isoDate || '').split('-')
+  return year && month && day ? `${day}-${month}-${year}` : ''
+}
+
+export const toWorkflowVariables = (filters) => ({
+  ...Object.fromEntries(Object.entries(VARIABLE_BY_FILTER).map(([key, name]) => [name, filters[key] === 'all' ? '' : filters[key]])),
+  ...Object.fromEntries(Object.entries(DATE_VARIABLE_BY_FILTER).map(([key, name]) => [name, toWorkflowDate(filters[key])])),
+})
 
 export async function postWorkflow(workflowId, variables, signal) {
   const body = new FormData()
@@ -28,6 +37,6 @@ export async function postWorkflow(workflowId, variables, signal) {
   } catch {
     throw new WorkflowError('Unexpected response format')
   }
-  if (import.meta.env.DEV && json && typeof json === 'object') console.debug('[workflow] response keys', Object.keys(json))
+  if (import.meta.env?.DEV && json && typeof json === 'object') console.debug('[workflow] response keys', Object.keys(json))
   return json
 }

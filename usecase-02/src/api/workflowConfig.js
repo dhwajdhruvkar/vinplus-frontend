@@ -1,4 +1,4 @@
-const env = import.meta.env
+const env = import.meta.env ?? {}
 
 export const WORKFLOW_IDS = {
   values: '219b13e1-e278-11f1-90ac-bbceffb96a86',
