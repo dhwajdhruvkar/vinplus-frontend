@@ -1,6 +1,8 @@
+import { companyLabel, useCompany } from '../company/companyContext.js'
 import { displayTime } from '../utils/format.js'
 
 export default function Header({ title, profile, notifications, notificationsOpen, onToggleNotifications, onReadAll, onOpenNotification, onProfile, onLogout }) {
+  const company = useCompany()
   const unread = notifications.filter((n) => !n.read).length
   const initials = (profile.name || profile.username || 'DM').trim().split(/\s+/).map((s) => s[0] || '').slice(0, 2).join('').toUpperCase()
 
@@ -8,7 +10,7 @@ export default function Header({ title, profile, notifications, notificationsOpe
     <header className="sticky">
       <div>
         <h1 id="pageTitle">{title}</h1>
-        <div className="sub">VINPlus &nbsp;/&nbsp; Ferrari Fort Lauderdale &nbsp;/&nbsp; Company 14</div>
+        <div className="sub">{`VINPlus  /  ${company.companyName}  /  ${companyLabel(company)}`}</div>
       </div>
       <div className="actions">
         <div className="headerControls">

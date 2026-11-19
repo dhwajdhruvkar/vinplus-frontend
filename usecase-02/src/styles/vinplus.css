@@ -1202,3 +1202,38 @@ body{background:#020711;color:#f5f7fd}
 .tableWrap+.between{margin-top:12px}
 .panel>.row{margin-bottom:12px}
 #sort{width:220px}
+
+/* Widget header controls: info beside the heading, export and full screen at the top right */
+.widgetHead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.panelTitle{display:flex;align-items:flex-start;gap:7px;min-width:0}
+.sourceBreakdownHead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.widgetInfo{position:relative;display:inline-flex;flex:none;margin-top:3px}
+.widgetInfoButton,.widgetToolButton{display:inline-grid;place-items:center;padding:0;color:#9fb2c9;cursor:pointer;transition:color .15s,background .15s,border-color .15s}
+.widgetInfoButton{width:18px;height:18px;border:0;border-radius:50%;background:transparent}
+.widgetToolButton{width:26px;height:26px;border:1px solid #34475e;border-radius:7px;background:#14233a}
+.widgetInfoButton:hover,.widgetToolButton:hover{color:#fff}
+.widgetToolButton:hover{background:#1d3250;border-color:#52667f}
+.widgetInfoButton:focus-visible,.widgetToolButton:focus-visible{outline:2px solid #68e6d4;outline-offset:2px}
+.widgetTools{display:flex;gap:6px;flex:none;margin-top:-2px}
+.widgetInfoTip{position:absolute;left:50%;top:calc(100% + 8px);transform:translateX(-50%);z-index:60;width:max-content;max-width:230px;padding:8px 10px;border:1px solid #52667f;border-radius:8px;background:linear-gradient(150deg,#16273d,#0a1728);box-shadow:0 10px 28px rgba(0,0,0,.45);color:#e6edf8;font-size:11px;font-weight:500;letter-spacing:0;line-height:1.4;text-align:left;text-transform:none;white-space:normal;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .15s,visibility .15s}
+.widgetInfo:hover .widgetInfoTip,.widgetInfoButton:focus-visible+.widgetInfoTip{opacity:1;visibility:visible}
+.tri>.panel:last-child .widgetInfoTip,.sourceKpiRight .widgetInfoTip{left:auto;right:-40px;transform:none}
+.widgetFullscreenOverlay{position:fixed;inset:0;z-index:29;display:grid;place-items:center;padding:24px;background:rgba(2,7,17,.84)}
+.widgetFullscreen{width:min(1240px,100%);max-height:100%;display:flex;flex-direction:column;padding:22px 26px 26px;border:1px solid #52657c;border-radius:16px;background:linear-gradient(155deg,#182940,#101d2e);box-shadow:0 20px 70px rgba(0,0,0,.6)}
+.widgetFullscreen h3{margin:0 0 16px;font-size:21px;font-weight:770;letter-spacing:-.25px;line-height:1.3}
+.widgetFullscreenBody{min-height:0;overflow:auto}
+.widgetFullscreen .trendgraph{height:min(64vh,640px)}
+.widgetFullscreen .donutWrap{zoom:1.6;padding-top:0;justify-content:center}
+.widgetFullscreen .journalBar{min-height:46px}
+.widgetFullscreen .matrixGrid button{min-height:52px}
+.widgetFullscreen .sourceKpiRight{max-width:none}
+
+/* Display-only KPI cards keep the hover highlight but not the pointer cursor */
+#content .kpis>.kpi.kpiInteractive{cursor:default}
+
+/* Reference IDs stay clickable without the underline */
+.tbl .referenceLink,.tbl .referenceLink:hover,.tbl .referenceLink:focus-visible{text-decoration:none}
+.tbl .referenceLink:focus-visible{border-radius:3px;outline:2px solid #68e6d4;outline-offset:2px}
+
+/* Neutral fallback when a company logo is unavailable */
+.crestFallback{display:grid;place-items:center;width:64px;height:64px;border:2px solid #52657c;border-radius:50%;background:#14233a;color:#fff;font-size:28px;font-weight:800}

@@ -27,15 +27,14 @@ function Spark({ index, color }) {
   )
 }
 
-export default function KpiCard({ index, title, value, metric, red, active, change, comparisonWindow, thresholdLabel, onSelect }) {
+export default function KpiCard({ index, title, value, red, change, comparisonWindow, thresholdLabel }) {
   const isReview = index === 5
   return (
     <div
-      className={`kpi ${red ? 'is-red' : 'is-teal'} kpiInteractive ${active ? 'activeMetric' : ''}`}
-      data-metric={metric} role="button" tabIndex={0}
+      className={`kpi ${red ? 'is-red' : 'is-teal'} kpiInteractive`}
+      role="group"
       title={isReview ? `High-value rule: ${thresholdLabel}` : `Month over month: ${comparisonWindow}`}
       aria-label={`${title}: ${value}, ${isReview ? thresholdLabel : 'MoM ' + change.label}`}
-      onClick={() => onSelect('metric', metric)}
     >
       <div className="label">
         <span className="metricIcon">

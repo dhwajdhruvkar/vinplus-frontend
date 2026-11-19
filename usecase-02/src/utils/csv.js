@@ -17,17 +17,22 @@ function refGroups(rows) {
     .map(([, entries]) => entries.sort((a, b) => a.postDate.localeCompare(b.postDate)))
 }
 
+export function downloadCSV(filename, columns, lines) {
+  const quote = (x) => '"' + String(x ?? '').replace(/"/g, '""') + '"'
+  const csv = [columns, ...lines].map((row) => row.map(quote).join(',')).join('\r\n')
+  const anchor = document.createElement('a')
+  const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }))
+  anchor.href = url
+  anchor.download = filename
+  anchor.click()
+  setTimeout(() => URL.revokeObjectURL(url), 10000)
+}
+
 export function exportCSV(rows, review) {
   const lines = refGroups(rows).flatMap((entries) => entries.map((x, i) => [
     x.ref, i + 1, x.postDate, x.journal, 'Not verified in GL', x.dept, accountLabel(x), x.account, '', '', x.description,
     x.amount > 0 ? x.amount : 0, x.amount < 0 ? -x.amount : 0, x.amount, 'Not in GL', status(x, review),
     review[x.id]?.note || '', 'Demonstration data',
   ]))
-  const csv = [COLUMNS, ...lines].map((row) => row.map((x) => '"' + String(x ?? '').replace(/"/g, '""') + '"').join(',')).join('\r\n')
-  const anchor = document.createElement('a')
-  const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }))
-  anchor.href = url
-  anchor.download = 'vinplus_policy_grouped_reference_demo.csv'
-  anchor.click()
-  setTimeout(() => URL.revokeObjectURL(url), 10000)
+  downloadCSV('vinplus_policy_grouped_reference_demo.csv', COLUMNS, lines)
 }

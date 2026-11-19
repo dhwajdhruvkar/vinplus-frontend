@@ -10,14 +10,13 @@ export default function PriorityInvestigation({ rows, review, onOpen }) {
       </>
     )
   }
-  const { r, reasons } = rankPriority(rows, review)
+  const { r } = rankPriority(rows, review)
   return (
     <>
       <div className="priorityLabel">{`FILTERED GL POSTING · ${r.ref}`}</div>
       <div className="priorityAmount">{amt(r.amount)}</div>
       <div className="priorityCaption">{`${r.dept} · ${r.journal}`}</div>
       <div className="prioritySecondary">{`${r.account} · ${accountLabel(r)}`}</div>
-      <div className="priorityAlert">{reasons.join(' · ') || 'Largest amount in the selected rows'}</div>
       <button className="priorityCTA" onClick={() => onOpen(r.id)}>Open investigation →</button>
     </>
   )

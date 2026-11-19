@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import Dashboard from './Dashboard.jsx'
 import LoginScreen from './components/LoginScreen.jsx'
+import CompanyBrandingProvider from './company/CompanyBrandingProvider.jsx'
+import { resolveCompany } from './company/companyContext.js'
 
 const SESSION_KEY = 'vinplus-share-demo-manager-session-v1'
 
@@ -35,5 +37,10 @@ export default function App() {
     window.scrollTo(0, 0)
   }
 
-  return signedIn ? <Dashboard onLogout={logout} /> : <LoginScreen onLogin={login} />
+  if (!signedIn) return <LoginScreen onLogin={login} />
+  return (
+    <CompanyBrandingProvider company={resolveCompany()}>
+      <Dashboard onLogout={logout} />
+    </CompanyBrandingProvider>
+  )
 }

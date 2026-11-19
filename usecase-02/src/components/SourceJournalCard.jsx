@@ -1,13 +1,31 @@
 import { DEPTS, JOURNALS } from '../data/ledger.js'
 import { fmt } from '../utils/format.js'
-import { distinctRefs, sumBy, sumNet } from '../utils/policy.js'
+import { distinctRefs, sourceScope, sumBy, sumNet } from '../utils/policy.js'
+import { WidgetInfo, WidgetTools } from './WidgetControls.jsx'
 
-export default function SourceJournalCard({ rows, filters, onSelect, onFilter }) {
-  const { flag, dept: filteredDept, focus, journal: source } = filters
-  const dept = flag !== 'all' && filteredDept === 'all' ? null : filteredDept === 'all' ? focus : filteredDept
-  const scoped = dept ? rows.filter((r) => r.dept === dept) : rows
+export function SourceJournalBars({ rows, filters, onSelect }) {
+  const { scoped } = sourceScope(rows, filters)
   const bySource = sumBy(scoped, 'journal')
   const max = Math.max(1, ...JOURNALS.map((j) => Math.abs(bySource[j] || 0)))
+  return (
+    <div className="sourceJournalBars">
+      {JOURNALS.map((j) => {
+        const value = bySource[j] || 0
+        return (
+          <button key={j} type="button" className={'journalMini' + (filters.journal === j ? ' active' : '')} data-overview-journal={j} aria-label={`Filter by ${j}`} onClick={() => onSelect('journal', j)}>
+            <div className="jName">{j}</div>
+            <div className="jValue">{fmt(value)}</div>
+            <div className="jTrack"><div style={{ width: Math.max(2, (Math.abs(value) / max) * 100).toFixed(1) + '%' }}></div></div>
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+export default function SourceJournalCard({ rows, filters, widget, onSelect, onExport, onFullscreen }) {
+  const { dept, scoped } = sourceScope(rows, filters)
+  const source = filters.journal
 
   return (
     <section className="sourceKpiCard belowFold" aria-label="Source Journal to Charged Department KPIs">
@@ -16,15 +34,8 @@ export default function SourceJournalCard({ rows, filters, onSelect, onFilter })
         <div className="sourceFilterControls">
           <div className="sourceDepts" role="group" aria-label="Choose charged department">
             {DEPTS.map((d) => (
-              <button key={d} type="button" className={filteredDept === d ? 'active' : ''} aria-pressed={filteredDept === d} onClick={() => onSelect('dept', d)}>{d}</button>
+              <button key={d} type="button" className={filters.dept === d ? 'active' : ''} aria-pressed={filters.dept === d} onClick={() => onSelect('dept', d)}>{d}</button>
             ))}
-          </div>
-          <div className="sourceJournalSelect">
-            <label htmlFor="overviewSourceJournal">Journal source</label>
-            <select id="overviewSourceJournal" aria-label="Filter KPI by source journal" value={source} onChange={(e) => onFilter('journal', e.target.value)}>
-              <option value="all">All Source Journals</option>
-              {JOURNALS.map((j) => <option key={j} value={j}>{j}</option>)}
-            </select>
           </div>
         </div>
       </div>
@@ -49,19 +60,14 @@ export default function SourceJournalCard({ rows, filters, onSelect, onFilter })
           </div>
         </div>
         <div className="sourceKpiRight">
-          <div className="sourceBreakdownTitle">Source Journal Breakdown</div>
-          <div className="sourceJournalBars">
-            {JOURNALS.map((j) => {
-              const value = bySource[j] || 0
-              return (
-                <button key={j} type="button" className={'journalMini' + (source === j ? ' active' : '')} data-overview-journal={j} aria-label={`Filter by ${j}`} onClick={() => onSelect('journal', j)}>
-                  <div className="jName">{j}</div>
-                  <div className="jValue">{fmt(value)}</div>
-                  <div className="jTrack"><div style={{ width: Math.max(2, (Math.abs(value) / max) * 100).toFixed(1) + '%' }}></div></div>
-                </button>
-              )
-            })}
+          <div className="sourceBreakdownHead">
+            <div className="panelTitle">
+              <div className="sourceBreakdownTitle">Source Journal Breakdown</div>
+              <WidgetInfo title="Source Journal Breakdown" text={widget.info} />
+            </div>
+            <WidgetTools title="Source Journal Breakdown" onExport={onExport} onFullscreen={onFullscreen} />
           </div>
+          <SourceJournalBars rows={rows} filters={filters} onSelect={onSelect} />
         </div>
       </div>
       <div className="sourceFoot">Select a department or journal to inspect its policy charges. Source journal does not confirm the operational department that requested the work.</div>

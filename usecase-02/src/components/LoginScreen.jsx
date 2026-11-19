@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
-import crest from '../assets/crest.png'
 
 export default function LoginScreen({ onLogin }) {
   const [view, setView] = useState('login')
@@ -35,7 +34,6 @@ export default function LoginScreen({ onLogin }) {
   return (
     <section className="loginScreen" id="loginScreen" aria-label="VINPlus manager login">
       <div className="loginFormBox">
-        <div className="loginBrandLogo"><img src={crest} alt="Ferrari prancing horse" /><span>FERRARI FORT LAUDERDALE</span></div>
         <h1 className="loginPageTitle">USER LOGIN</h1>
         <p className="demoLoginLabel">VINPLUS · POLICY WORK CONTROL</p>
         <div id="loginError" className="loginError" role="alert" hidden={!error}>{error}</div>

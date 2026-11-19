@@ -216,3 +216,8 @@ export function applyReview(review, r, patch) {
   for (const entry of [r, ...voucherEntries(r)]) next[entry.id] = { ...(review[entry.id] || {}), ...patch }
   return next
 }
+
+export function sourceScope(rows, { flag, dept, focus }) {
+  const department = flag !== 'all' && dept === 'all' ? null : dept === 'all' ? focus : dept
+  return { dept: department, scoped: department ? rows.filter((r) => r.dept === department) : rows }
+}

@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ROWS, ROW_BY_ID } from './data/ledger.js'
 import { useStoredState } from './hooks/useStoredState.js'
-import { exportCSV } from './utils/csv.js'
+import { downloadCSV, exportCSV } from './utils/csv.js'
+import { widgetExport } from './utils/widgets.js'
 import {
   DEFAULT_FILTERS, activeFilterChips, applyReview, applySelection, baseFilter, clearFilter, demoManagerDraft,
   simulatedAdvisorReply, voucherKey, voucherThread,
@@ -37,11 +38,11 @@ export default function Dashboard({ onLogout }) {
   const [draftNote, setDraftNote] = useState(null)
   const [notificationsOpen, setNotificationsOpen] = useState(false)
   const [toast, setToast] = useState(null)
+  const [fullscreen, setFullscreen] = useState(null)
   const [review, setReview] = useStoredState('vinplus-share-demo-reviews-v1', {}, isRecord)
   const [threads, setThreads] = useStoredState('vinplus-share-demo-jv-threads-v1', {}, isRecord)
   const [notifications, setNotifications] = useStoredState('vinplus-share-demo-notifications-v2', seedNotifications, (v) => (Array.isArray(v) && v.length ? v : undefined))
   const [profiles, setProfiles] = useStoredState('vinplus-share-demo-profiles-v2', { manager: DEFAULT_PROFILE }, validProfiles)
-  const shellRef = useRef(null)
 
   const rows = baseFilter(filters, review)
   const profile = profiles.manager
@@ -58,10 +59,10 @@ export default function Dashboard({ onLogout }) {
   }, [toast])
 
   useEffect(() => {
-    if (!drawerOpen) return
+    if (!drawerOpen && !fullscreen) return
     document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = '' }
-  }, [drawerOpen])
+  }, [drawerOpen, fullscreen])
 
   useEffect(() => {
     if (!notificationsOpen) return
@@ -79,12 +80,13 @@ export default function Dashboard({ onLogout }) {
         e.target.click()
       } else if (e.key === 'Escape') {
         if (drawerOpen) setDrawer(null)
+        else if (fullscreen) setFullscreen(null)
         else setNotificationsOpen(false)
       }
     }
     document.addEventListener('keydown', onKeyDown)
     return () => document.removeEventListener('keydown', onKeyDown)
-  }, [drawerOpen])
+  }, [drawerOpen, fullscreen])
 
   const changeFilters = (update) => {
     setFilters(update)
@@ -102,6 +104,7 @@ export default function Dashboard({ onLogout }) {
   const goto = (next) => {
     setTab(next)
     setPage(0)
+    setFullscreen(null)
     closeDrawer()
     window.scrollTo({ top: 0, behavior: 'auto' })
   }
@@ -156,6 +159,13 @@ export default function Dashboard({ onLogout }) {
     flash('Reference-grouped demo postings exported')
   }
 
+  const exportWidget = (id) => {
+    const file = widgetExport(id, rows, filters, review)
+    if (!file) return flash('No data to export for this widget')
+    downloadCSV(file.filename, file.columns, file.lines)
+    flash(`${file.title} exported as CSV`)
+  }
+
   const select = (kind, value, month) => changeFilters((f) => applySelection(f, kind, value, month))
   const setFilter = (key, value) => changeFilters((f) => ({ ...f, [key]: value }))
   const clearOne = (key) => changeFilters((f) => clearFilter(f, key))
@@ -164,7 +174,7 @@ export default function Dashboard({ onLogout }) {
 
   return (
     <>
-      <div className="shell" id="app" ref={shellRef}>
+      <div className="shell" id="app">
         <Sidebar tab={tab} onGoto={goto} />
         <div className="main">
           <Header
@@ -176,8 +186,8 @@ export default function Dashboard({ onLogout }) {
           <main className="body" id="content">
             {tab === 'overview' ? (
               <PolicyWorkControl
-                key={contentKey} rows={rows} filters={filters} review={review} threads={threads} table={table} onSelect={select}
-                onFilter={setFilter} onClearOne={clearOne} onOpenReview={openReview} onExport={exportRows} onViewAll={() => goto('transactions')}
+                key={contentKey} rows={rows} filters={filters} review={review} threads={threads} table={table} fullscreen={fullscreen} onFullscreen={setFullscreen}
+                onSelect={select} onClearOne={clearOne} onOpenReview={openReview} onExport={exportRows} onExportWidget={exportWidget} onViewAll={() => goto('transactions')}
               />
             ) : (
               <Transactions key={contentKey} rows={rows} review={review} threads={threads} table={table} onSortChoice={chooseSort} onOpenReview={openReview} onExport={exportRows} />
@@ -197,7 +207,7 @@ export default function Dashboard({ onLogout }) {
         )}
       </Drawer>
       <Toast toast={toast} />
-      <ChartTooltip shellRef={shellRef} rows={rows} filters={filters} review={review} />
+      <ChartTooltip rows={rows} filters={filters} review={review} />
     </>
   )
 }

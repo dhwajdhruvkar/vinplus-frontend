@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { DEPTS, DEPT_COLORS, MONTHS } from '../data/ledger.js'
 import { trendMonthIndex } from '../utils/chart.js'
 import { fmt, pct } from '../utils/format.js'
-import { FLAG_SPEC, baseFilter, matchFlag, sumBy, sumNet } from '../utils/policy.js'
+import { FLAG_SPEC, baseFilter, matchFlag, sourceScope, sumBy, sumNet } from '../utils/policy.js'
 
 const MATRIX_NOTE = 'Click to filter all charts by department and month.'
 
@@ -33,8 +33,7 @@ function tooltipModel(event, rows, filters, review) {
   node = target.closest('[data-overview-journal]')
   if (node) {
     const journal = node.dataset.overviewJournal
-    const dept = filters.flag !== 'all' && filters.dept === 'all' ? null : filters.dept === 'all' ? filters.focus : filters.dept
-    const scoped = rows.filter((x) => !dept || x.dept === dept)
+    const { dept, scoped } = sourceScope(rows, filters)
     const value = sumNet(scoped.filter((x) => x.journal === journal))
     return { caption: 'Source Journal → Charged Department', label: `${journal} · ${dept || 'All departments'}`, value: fmt(value), percent: pct(value, sumNet(scoped)), note: 'Net selected-department charges from this journal.', color: '#fa3359' }
   }
@@ -53,26 +52,25 @@ function tooltipModel(event, rows, filters, review) {
   return null
 }
 
-export default function ChartTooltip({ shellRef, rows, filters, review }) {
+export default function ChartTooltip({ rows, filters, review }) {
   const [tip, setTip] = useState(null)
   const rootRef = useRef(null)
 
   useEffect(() => {
-    const shell = shellRef.current
     const move = (e) => {
       const model = tooltipModel(e, rows, filters, review)
       setTip(model && { model, x: e.clientX || 0, y: e.clientY || 0 })
     }
     const hide = () => setTip(null)
-    shell.addEventListener('pointermove', move)
-    shell.addEventListener('pointerleave', hide)
+    document.addEventListener('pointermove', move)
+    document.documentElement.addEventListener('pointerleave', hide)
     window.addEventListener('scroll', hide, { passive: true, capture: true })
     return () => {
-      shell.removeEventListener('pointermove', move)
-      shell.removeEventListener('pointerleave', hide)
+      document.removeEventListener('pointermove', move)
+      document.documentElement.removeEventListener('pointerleave', hide)
       window.removeEventListener('scroll', hide, { capture: true })
     }
-  }, [shellRef, rows, filters, review])
+  }, [rows, filters, review])
 
   useLayoutEffect(() => {
     if (!tip) return
