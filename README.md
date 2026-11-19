@@ -2,6 +2,32 @@
 
 A frontend recreation of the **Shop Supplies Analysiss** dashboard inspected in Chrome. The standalone dashboard fills the viewport and includes five KPI cards, dealer charts, sales donut, manager performance, advisor performance, monthly trend, VIN charts, filter drawer, and repair-order table.
 
+## Repository layout
+
+This repository contains two independent applications. Each has its own dependencies, configuration and build.
+
+| Application | Location | Description |
+| --- | --- | --- |
+| Use Case 1 | repository root | Shop Supplies Dashboard |
+| Use Case 2 | `usecase-02/` | VINPlus Policy Work Control |
+
+Use Case 1 (run from the repository root):
+
+```bash
+npm ci
+npm run dev
+npm run build
+```
+
+Use Case 2 (run from `usecase-02/`):
+
+```bash
+cd usecase-02
+npm ci
+npm run dev
+npm run build
+```
+
 ## Run
 
 Requires Node.js 22.12 or newer.
