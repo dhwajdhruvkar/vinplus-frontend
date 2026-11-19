@@ -92,7 +92,7 @@ export default function ReviewDrawer({ row: r, review, threads, focusDept, draft
           <p className="jvCommentRule">Only one comment will be allowed. You can edit and save the same comment as many times as you need to. Reply stays linked to that comment.</p>
           <label className="formLabel" htmlFor="managerNote">Manager comment</label>
           <textarea className="textarea noteTextarea" id="managerNote" rows={4} placeholder="Enter one comment for this journal voucher…" value={draftNote ?? (thread.comment || demoManagerDraft(r))} onChange={(e) => onDraftChange(e.target.value)} />
-          <div className="drawerActions"><button type="button" className="btn primary" onClick={onSave}>{thread.comment ? 'Save Edited Comment' : 'Save Comment'}</button></div>
+          <div className="drawerActions"><button type="button" className="btn primary" onClick={onSave}>Send</button></div>
           {thread.comment && (
             <div className="jvCommentSaved">
               <strong>Current comment</strong><p>{thread.comment}</p>
