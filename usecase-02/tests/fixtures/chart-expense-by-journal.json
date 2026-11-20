@@ -1,0 +1,101 @@
+{
+    "version": {
+        "name": "vanilla",
+        "version": "Lumenore Studio"
+    },
+    "status": {
+        "code": "200",
+        "value": "success"
+    },
+    "data": {
+        "data": {
+            "queryInfo": {
+                "totalRows": 16,
+                "type": "selected"
+            },
+            "resultSet": [
+                [
+                    "Service Sales Cash",
+                    532473.88
+                ],
+                [
+                    "General Journal",
+                    170871.45
+                ],
+                [
+                    "Recurring",
+                    63923.03999999999
+                ],
+                [
+                    "General Purchases",
+                    45385.09
+                ],
+                [
+                    "Cash Disbursements",
+                    43034.270000000004
+                ],
+                [
+                    "Used Car Sales Journal",
+                    42605.15
+                ],
+                [
+                    "Parts Sales Cash",
+                    36911.17
+                ],
+                [
+                    "Consignment Vehicles",
+                    24537.54
+                ],
+                [
+                    "Used Car Wholesale",
+                    14789.199999999999
+                ],
+                [
+                    "Used Vehicle Purchases",
+                    9198.79
+                ],
+                [
+                    "Ach-Wires-Debit Items",
+                    6030
+                ],
+                [
+                    "New Vehicle Purchases",
+                    4854.8
+                ],
+                [
+                    "Cash Receipts (Open-Item)",
+                    1500
+                ],
+                [
+                    "Vehicle Sales",
+                    348
+                ],
+                [
+                    "Cash Receipts (Balance Fwd)",
+                    -1581.02
+                ],
+                [
+                    "Warranty Credits",
+                    -1904.1799999999996
+                ]
+            ],
+            "metaData": [
+                {
+                    "colIndex": 0,
+                    "colName": "Journal Name",
+                    "colType": "Varchar",
+                    "colId": "Journal Name",
+                    "cryptographicFunction": "NONE"
+                },
+                {
+                    "colIndex": 1,
+                    "colName": "Net Policy Expense",
+                    "colType": "Float",
+                    "colId": "Net Policy Expense",
+                    "cryptographicFunction": "NONE"
+                }
+            ]
+        }
+    },
+    "error": false
+}

@@ -35,7 +35,7 @@ export default function PolicyWorkControl({ rows, filters, review, threads, tabl
 
   const kpiProps = (stat, index, format) => {
     if (!live) return { value: format(stats[stat]), change: momValue(comparison.current[stat], comparison.prior[stat]), comparisonWindow: comparison.window }
-    const { values, mom } = live
+    const { values, mom, trend } = live
     const failing = values.status !== 'success' ? values : index < 5 && mom.status !== 'success' ? mom : null
     const value = values.status === 'success' ? values.data[stat] : null
     return {
@@ -43,15 +43,18 @@ export default function PolicyWorkControl({ rows, filters, review, threads, tabl
       change: mom.status === 'success' ? mom.data[stat] : undefined,
       comparisonWindow: mom.data?.window || 'Backend comparison period not specified',
       state: failing?.status, stateMessage: failing?.error,
+      // Real KPI-trend series only; a loading, failed or empty trend draws no sparkline instead of the demo shape.
+      sparkValues: trend.status === 'success' ? trend.data.rows.map((r) => r[stat]).filter((v) => v != null) : [],
     }
   }
-  const trend = live?.trend
+  // Live chart props: the backend result, or a loading / empty / error state. Never the demo ledger.
+  const fromLive = (slot, build) => (!slot ? {} : slot.status === 'success' ? build(slot.data) : { state: slot.status, message: slot.error })
 
   const bodies = {
-    trend: <TrendChart rows={rows} series={trend?.status === 'success' ? trend.data.rows.map((r) => ({ month: r.month, value: r.net })) : undefined} state={trend && trend.status !== 'success' ? trend.status : undefined} message={trend?.error} onSelect={onSelect} />,
-    department: <DonutChart rows={rows} activeDept={filters.dept} onSelect={onSelect} />,
-    journal: <JournalBars rows={rows} activeJournal={filters.journal} onSelect={onSelect} />,
-    matrix: <ReviewMatrix rows={rows} onSelect={onSelect} />,
+    trend: <TrendChart rows={rows} {...fromLive(live?.monthly, (d) => ({ series: d.rows }))} onSelect={onSelect} />,
+    department: <DonutChart rows={rows} {...fromLive(live?.department, (d) => ({ items: d.items }))} activeDept={filters.dept} onSelect={onSelect} />,
+    journal: <JournalBars rows={rows} {...fromLive(live?.journal, (d) => ({ items: d.items }))} activeJournal={filters.journal} onSelect={onSelect} />,
+    matrix: <ReviewMatrix rows={rows} {...fromLive(live?.matrix, (d) => ({ matrix: d }))} onSelect={onSelect} />,
     flags: <ReviewFlags rows={baseFilter(filters, review, { ignoreFlag: true })} activeFlag={filters.flag} onSelect={onSelect} />,
     priority: <PriorityInvestigation rows={rows} review={review} onOpen={openFromWidget} />,
     source: <div className="sourceKpiRight"><SourceJournalBars rows={rows} filters={filters} onSelect={onSelect} /></div>,

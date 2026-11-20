@@ -10,8 +10,18 @@ const SHADES = ['#ff335b', '#ff335b', '#00cdb8', '#a7e6ea', '#bbe5f4', '#ff335b'
 const SPARK_POINTS = [[0, 17], [9, 12], [18, 17], [28, 7], [38, 14], [49, 11], [59, 14]]
 const CHANGE_COLORS = { '1': '#fb6a82', '-1': '#37dfcb', '0': '#c9d9e8' }
 
-function Spark({ index, color }) {
-  const path = SPARK_POINTS.map(([x, y], j) => `${j ? 'L' : 'M'}${x},${y + ((j + index) % 3 - 1) * 2}`).join(' ')
+// Live sparkline: the real KPI trend series scaled into the 60x25 box. Fewer than two points draw nothing (no demo shape).
+function livePoints(values) {
+  if (values.length < 2) return null
+  const low = Math.min(...values)
+  const span = Math.max(...values) - low
+  return values.map((v, j) => [(j * 59) / (values.length - 1), span ? 22 - ((v - low) / span) * 19 : 12])
+}
+
+function Spark({ index, color, values }) {
+  const points = values ? livePoints(values) : SPARK_POINTS.map(([x, y], j) => [x, y + ((j + index) % 3 - 1) * 2])
+  if (!points) return <svg className="spark" viewBox="0 0 60 25" aria-hidden="true" />
+  const path = points.map(([x, y], j) => `${j ? 'L' : 'M'}${Number(x.toFixed(1))},${Number(y.toFixed(1))}`).join(' ')
   const gradient = `sparkG${index}`
   return (
     <svg className="spark" viewBox="0 0 60 25" aria-hidden="true">
@@ -29,7 +39,7 @@ function Spark({ index, color }) {
 
 const STATE_HINTS = { loading: 'Loading…', empty: 'No data for these filters', error: 'Unavailable' }
 
-export default function KpiCard({ index, title, value, red, change, comparisonWindow, thresholdLabel, state, stateMessage }) {
+export default function KpiCard({ index, title, value, red, change, comparisonWindow, thresholdLabel, state, stateMessage, sparkValues }) {
   const isReview = index === 5
   return (
     <div
@@ -46,9 +56,9 @@ export default function KpiCard({ index, title, value, red, change, comparisonWi
         <span className="labelText">{title}</span>
       </div>
       <div className="value">{value}</div>
-      <Spark index={index} color={red ? '#ff2b56' : '#00ddc6'} />
+      <Spark index={index} color={red ? '#ff2b56' : '#00ddc6'} values={sparkValues} />
       <div className="hint">
-        {state ? <span>{STATE_HINTS[state]}</span> : isReview ? <span>{thresholdLabel}</span> : (
+        {state ? <span>{STATE_HINTS[state]}</span> : isReview ? <span>{thresholdLabel}</span> : change.unavailable ? <span>MoM unavailable</span> : (
           <>
             <b style={{ color: CHANGE_COLORS[change.direction] }}>{change.label}</b>
             <span>{' ' + (change.zeroBaseline ? 'no prior-month baseline' : 'vs. previous month')}</span>

@@ -1,0 +1,77 @@
+{
+    "version": {
+        "name": "vanilla",
+        "version": "Lumenore Studio"
+    },
+    "status": {
+        "code": "200",
+        "value": "success"
+    },
+    "data": {
+        "data": {
+            "queryInfo": {
+                "totalRows": 10,
+                "type": "selected"
+            },
+            "resultSet": [
+                [
+                    "Jan",
+                    107554.79
+                ],
+                [
+                    "Feb",
+                    95646.42000000001
+                ],
+                [
+                    "Mar",
+                    71061.47
+                ],
+                [
+                    "Apr",
+                    114208.07
+                ],
+                [
+                    "May",
+                    140934.63
+                ],
+                [
+                    "Jun",
+                    38087.25
+                ],
+                [
+                    "Jul",
+                    133343.18
+                ],
+                [
+                    "Aug",
+                    70344.67
+                ],
+                [
+                    "Sep",
+                    102108.65999999999
+                ],
+                [
+                    "Oct",
+                    119688.04
+                ]
+            ],
+            "metaData": [
+                {
+                    "colIndex": 0,
+                    "colName": "Months",
+                    "colType": "Varchar",
+                    "colId": "Months",
+                    "cryptographicFunction": "NONE"
+                },
+                {
+                    "colIndex": 1,
+                    "colName": "Net Policy Expense",
+                    "colType": "Float",
+                    "colId": "Net Policy Expense",
+                    "cryptographicFunction": "NONE"
+                }
+            ]
+        }
+    },
+    "error": false
+}

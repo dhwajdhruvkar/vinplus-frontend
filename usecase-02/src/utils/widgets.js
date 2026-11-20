@@ -4,10 +4,13 @@ import { accountLabel, baseFilter, FLAG_SPEC, matchFlag, rankPriority, status, s
 const money = (n) => Number(n.toFixed(2))
 const share = (value, total) => (((value || 0) / (total || 1)) * 100).toFixed(1)
 
-const liveTrendExport = (trendRows) => ({
-  columns: ['Month', 'Net Policy Expense', 'Gross Policy Debits', 'Credits / Offsets', 'Policy Posting Entries', 'Unique References', 'High-Value Review Candidates'],
-  lines: trendRows.map((r) => [r.month, r.net, r.deb, r.credits, r.lines, r.refs, r.review]),
-})
+// Live exports contain only what the chart workflows returned. A chart that is loading, failed or empty has nothing to export.
+const LIVE_EXPORTS = {
+  trend: (live) => live.monthly.status === 'success' && { columns: ['Month', 'Net Policy Expense'], lines: live.monthly.data.rows.map((r) => [r.month, r.value]) },
+  department: (live) => live.department.status === 'success' && { columns: ['Department', 'Net Policy Expense'], lines: live.department.data.items.map((r) => [r.name, r.value]) },
+  journal: (live) => live.journal.status === 'success' && { columns: ['Journal Name', 'Net Policy Expense'], lines: live.journal.data.items.map((r) => [r.name, r.value]) },
+  matrix: (live) => live.matrix.status === 'success' && { columns: ['Department', ...live.matrix.data.months], lines: live.matrix.data.rows.map((r) => [r.name, ...r.values]) },
+}
 
 export const WIDGETS = {
   trend: {
@@ -72,12 +75,13 @@ export const WIDGETS = {
 }
 
 export function widgetExport(id, rows, filters, review, live) {
-  if (id === 'trend' && live ? live.trend.status !== 'success' : !rows.length) return null
+  const liveFile = live && LIVE_EXPORTS[id]?.(live)
+  if (live && id in LIVE_EXPORTS ? !liveFile : !rows.length) return null
   const widget = WIDGETS[id]
   const slug = widget.title.toLowerCase().replace(/×/g, 'x').replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '')
   return {
     title: widget.title,
-    ...(id === 'trend' && live ? liveTrendExport(live.trend.data.rows) : { columns: widget.columns, lines: widget.lines(rows, filters, review) }),
+    ...(liveFile || { columns: widget.columns, lines: widget.lines(rows, filters, review) }),
     filename: `vinplus_${slug}_${filters.dateStart}_to_${filters.dateEnd}.csv`,
   }
 }

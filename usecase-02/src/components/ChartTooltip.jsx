@@ -1,57 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { DEPTS, DEPT_COLORS, MONTHS } from '../data/ledger.js'
-import { trendMonthIndex } from '../utils/chart.js'
-import { fmt, pct } from '../utils/format.js'
-import { FLAG_SPEC, baseFilter, matchFlag, sourceScope, sumBy, sumNet } from '../utils/policy.js'
-
-const MATRIX_NOTE = 'Click to filter all charts by department and month.'
-
-function tooltipModel(event, rows, filters, review, live) {
-  const target = event.target
-  if (target.closest('.kpiInteractive,.sourceKpiLeft .metricClickable')) return null
-
-  let node = target.closest('[data-chart-heat]')
-  if (node) {
-    const [d, m] = node.dataset.chartHeat.split(',').map(Number)
-    const value = sumNet(rows.filter((x) => x.dept === DEPTS[d] && x.month === MONTHS[m]))
-    return { caption: 'Department × Month Review Matrix', label: `${DEPTS[d]} · ${MONTHS[m]} 2026`, value: fmt(value), note: MATRIX_NOTE, color: DEPT_COLORS[d] }
-  }
-  node = target.closest('[data-chart-dept]')
-  if (node) {
-    const i = Number(node.dataset.chartDept)
-    const totals = sumBy(rows, 'dept')
-    const amount = totals[DEPTS[i]] || 0
-    const total = Object.values(totals).reduce((sum, n) => sum + Math.max(0, n || 0), 0)
-    return { caption: 'Expense by Department', label: DEPTS[i], value: fmt(amount), percent: pct(Math.max(0, amount), total), note: 'Charged department · Click to filter the dashboard.', color: DEPT_COLORS[i] }
-  }
-  node = target.closest('[data-chart-trend]')
-  if (node) {
-    const liveRows = live?.trend.data?.rows ?? []
-    const i = trendMonthIndex(node, event.clientX, live ? liveRows.length : 10)
-    const value = live ? liveRows[i]?.net : sumNet(rows.filter((x) => x.month === MONTHS[i]))
-    return { caption: 'Monthly Policy Expense Trend', label: live ? liveRows[i]?.month ?? '—' : `${MONTHS[i]} 2026`, value: value == null ? '—' : fmt(value), note: 'Monthly net policy expense · Click to filter by this month.', color: '#ff315e' }
-  }
-  node = target.closest('[data-overview-journal]')
-  if (node) {
-    const journal = node.dataset.overviewJournal
-    const { dept, scoped } = sourceScope(rows, filters)
-    const value = sumNet(scoped.filter((x) => x.journal === journal))
-    return { caption: 'Source Journal → Charged Department', label: `${journal} · ${dept || 'All departments'}`, value: fmt(value), percent: pct(value, sumNet(scoped)), note: 'Net selected-department charges from this journal.', color: '#fa3359' }
-  }
-  node = target.closest('[data-chart-journal]')
-  if (node) {
-    const totals = sumBy(rows, 'journal')
-    const value = totals[node.dataset.chartJournal] || 0
-    return { caption: 'Expense by Journal', label: node.dataset.chartJournal, value: fmt(value), percent: pct(value, sumNet(rows)), note: 'Click to filter all KPI cards by this journal.', color: '#f12e58' }
-  }
-  node = target.closest('[data-chart-flag]')
-  if (node) {
-    const code = node.dataset.chartFlag
-    const count = baseFilter(filters, review, { ignoreFlag: true }).filter((r) => matchFlag(r, code)).length
-    return { caption: 'Key Review Flags', label: FLAG_SPEC[code].label, value: `${count} postings`, note: 'Screening candidates only; click to filter the dashboard.', color: '#f7b94d' }
-  }
-  return null
-}
+import { tooltipModel } from '../utils/tooltip.js'
 
 export default function ChartTooltip({ rows, filters, review, live }) {
   const [tip, setTip] = useState(null)

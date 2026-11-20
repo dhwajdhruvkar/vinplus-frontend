@@ -2,17 +2,16 @@ import { Fragment } from 'react'
 import { MONTHS } from '../data/ledger.js'
 import { trendMonthIndex, trendX } from '../utils/chart.js'
 import { fmt } from '../utils/format.js'
+import GraphState from './GraphState.jsx'
 
 const BASELINE = 210
 const HEIGHT = 181
-
-const MESSAGES = { loading: 'Loading monthly trend…', empty: 'No trend data for these filters' }
 
 export default function TrendChart({ rows, series: liveSeries, state, message, onSelect }) {
   const series = liveSeries ?? MONTHS.map((month) => ({ month, value: rows.filter((r) => r.month === month).reduce((s, r) => s + r.amount, 0) }))
   const values = series.map((s) => s.value)
   const known = values.filter((v) => v != null)
-  if (state || !known.length) return <div className="graphEmpty">{state === 'error' ? message : MESSAGES[state ?? 'empty']}</div>
+  if (state || !known.length) return <GraphState state={state ?? 'empty'} message={message} noun="monthly trend" />
 
   const low = Math.min(0, ...known)
   const high = Math.max(1, ...known)

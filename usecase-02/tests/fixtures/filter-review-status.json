@@ -1,0 +1,33 @@
+{
+    "version": {
+        "name": "vanilla",
+        "version": "Lumenore Studio"
+    },
+    "status": {
+        "code": "200",
+        "value": "success"
+    },
+    "data": {
+        "data": {
+            "queryInfo": {
+                "totalRows": 1,
+                "type": "selected"
+            },
+            "resultSet": [
+                [
+                    "Pendig"
+                ]
+            ],
+            "metaData": [
+                {
+                    "colIndex": 0,
+                    "colName": "Review",
+                    "colType": "Varchar",
+                    "colId": "Review",
+                    "cryptographicFunction": "NONE"
+                }
+            ]
+        }
+    },
+    "error": false
+}

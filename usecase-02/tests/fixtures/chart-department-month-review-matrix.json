@@ -1,0 +1,309 @@
+{
+    "version": {
+        "name": "vanilla",
+        "version": "Lumenore Studio"
+    },
+    "status": {
+        "code": "200",
+        "value": "success"
+    },
+    "data": {
+        "data": {
+            "queryInfo": {
+                "totalRows": 13,
+                "type": "selected"
+            },
+            "resultSet": [
+                [
+                    "Af Policy Work P&A",
+                    475.49000000000007,
+                    1008.45,
+                    105.32,
+                    0,
+                    -0.26,
+                    12.33,
+                    266.83000000000004,
+                    85.47,
+                    130.78,
+                    -1.2000000000000002,
+                    0,
+                    0
+                ],
+                [
+                    "Af Policy Work Srv",
+                    6441.24,
+                    6819.03,
+                    6685.530000000001,
+                    6279.28,
+                    5390.610000000001,
+                    22255.94,
+                    8713.59,
+                    14187.150000000001,
+                    6074.99,
+                    17725.82,
+                    0,
+                    0
+                ],
+                [
+                    "Af Policy Work-Veh New",
+                    435.25,
+                    161.83,
+                    283.7,
+                    208.7,
+                    331.87,
+                    0,
+                    737.49,
+                    -23.01,
+                    0,
+                    931.7,
+                    0,
+                    0
+                ],
+                [
+                    "Af Policy Work-Veh Usd",
+                    -23.01,
+                    469.65,
+                    0,
+                    0,
+                    0,
+                    161.83,
+                    140,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                [
+                    "Fer Policy Work P&A",
+                    -0.12,
+                    -1.92,
+                    1.2000000000000002,
+                    -178.08,
+                    -121.00999999999999,
+                    2230.16,
+                    -376.56999999999994,
+                    157.22000000000003,
+                    480.59,
+                    269.05,
+                    0,
+                    0
+                ],
+                [
+                    "Fer Policy Work Srv",
+                    31602.550000000003,
+                    27998.61,
+                    30623.29,
+                    29119.079999999998,
+                    44815.45,
+                    25727.72,
+                    43648.69,
+                    31457.72,
+                    35084.1,
+                    20517.27,
+                    0,
+                    0
+                ],
+                [
+                    "Fer Policy Work-Veh New",
+                    5889.5,
+                    426.15,
+                    321,
+                    14689.3,
+                    22861.84,
+                    2453.2,
+                    7039.83,
+                    3349.13,
+                    7399.51,
+                    19072.39,
+                    0,
+                    0
+                ],
+                [
+                    "Fer Policy Work-Veh Usd",
+                    52641.75,
+                    33693.95,
+                    22871.63,
+                    36915.17,
+                    55205.63,
+                    -26096.859999999993,
+                    59123.590000000004,
+                    9672.12,
+                    35672.68,
+                    26627.32,
+                    0,
+                    0
+                ],
+                [
+                    "Jj Policy Work-Veh Usd",
+                    324,
+                    1127.4099999999999,
+                    1599.3,
+                    17311.72,
+                    3079.13,
+                    2094.1600000000003,
+                    3556.2,
+                    -1604.8100000000002,
+                    4161.7,
+                    20000,
+                    0,
+                    0
+                ],
+                [
+                    "Mas Policy Work P&A",
+                    0.31000000000000016,
+                    305.02000000000004,
+                    -0.15,
+                    -579.8699999999999,
+                    59.32,
+                    2892.47,
+                    -5.34,
+                    1209.8100000000002,
+                    -2248.1099999999997,
+                    422.37,
+                    0,
+                    0
+                ],
+                [
+                    "Mas Policy Work Srv",
+                    6439.34,
+                    21299.41,
+                    5828.78,
+                    8933.17,
+                    7516.89,
+                    4463.3099999999995,
+                    10487.15,
+                    11665.880000000001,
+                    13591.14,
+                    10351.64,
+                    0,
+                    0
+                ],
+                [
+                    "Mas Policy Work-Veh New",
+                    644.32,
+                    317.44,
+                    200,
+                    0,
+                    1019.61,
+                    0,
+                    13.109999999999996,
+                    0,
+                    0,
+                    2415.59,
+                    0,
+                    0
+                ],
+                [
+                    "Mas Policy Work-Veh Usd",
+                    2684.17,
+                    2021.3899999999999,
+                    2541.87,
+                    1509.6,
+                    775.55,
+                    1892.99,
+                    -1.39,
+                    187.99,
+                    1761.28,
+                    1356.09,
+                    0,
+                    0
+                ]
+            ],
+            "metaData": [
+                {
+                    "colIndex": 0,
+                    "colName": "Department",
+                    "colType": "Varchar",
+                    "colId": "Department",
+                    "cryptographicFunction": "NONE"
+                },
+                {
+                    "colIndex": 1,
+                    "colName": "Jan",
+                    "colType": "Float",
+                    "colId": "Jan",
+                    "cryptographicFunction": "NONE"
+                },
+                {
+                    "colIndex": 2,
+                    "colName": "Feb",
+                    "colType": "Float",
+                    "colId": "Feb",
+                    "cryptographicFunction": "NONE"
+                },
+                {
+                    "colIndex": 3,
+                    "colName": "Mar",
+                    "colType": "Float",
+                    "colId": "Mar",
+                    "cryptographicFunction": "NONE"
+                },
+                {
+                    "colIndex": 4,
+                    "colName": "Apr",
+                    "colType": "Float",
+                    "colId": "Apr",
+                    "cryptographicFunction": "NONE"
+                },
+                {
+                    "colIndex": 5,
+                    "colName": "May",
+                    "colType": "Float",
+                    "colId": "May",
+                    "cryptographicFunction": "NONE"
+                },
+                {
+                    "colIndex": 6,
+                    "colName": "Jun",
+                    "colType": "Float",
+                    "colId": "Jun",
+                    "cryptographicFunction": "NONE"
+                },
+                {
+                    "colIndex": 7,
+                    "colName": "Jul",
+                    "colType": "Float",
+                    "colId": "Jul",
+                    "cryptographicFunction": "NONE"
+                },
+                {
+                    "colIndex": 8,
+                    "colName": "Aug",
+                    "colType": "Float",
+                    "colId": "Aug",
+                    "cryptographicFunction": "NONE"
+                },
+                {
+                    "colIndex": 9,
+                    "colName": "Sep",
+                    "colType": "Float",
+                    "colId": "Sep",
+                    "cryptographicFunction": "NONE"
+                },
+                {
+                    "colIndex": 10,
+                    "colName": "Oct",
+                    "colType": "Float",
+                    "colId": "Oct",
+                    "cryptographicFunction": "NONE"
+                },
+                {
+                    "colIndex": 11,
+                    "colName": "Nov",
+                    "colType": "Float",
+                    "colId": "Nov",
+                    "cryptographicFunction": "NONE"
+                },
+                {
+                    "colIndex": 12,
+                    "colName": "Dec",
+                    "colType": "Float",
+                    "colId": "Dec",
+                    "cryptographicFunction": "NONE"
+                }
+            ]
+        }
+    },
+    "error": false
+}

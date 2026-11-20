@@ -1,4 +1,3 @@
-import { changeModel } from '../utils/policy.js'
 import { WorkflowError } from './workflowClient.js'
 
 // Column names exactly as returned in body.data.data.metaData[].colName.
@@ -17,6 +16,27 @@ export const COLUMNS = {
     lines: 'Policy Posting Entries Trend', refs: 'Unique References Trend', review: 'High-Value Review Candidates Trend',
   },
   trendMonth: 'months',
+  // Filter-option workflows: each returns one column (or, for the date bounds, two) read by colName.
+  filters: { min: 'Min_Date', max: 'Max_Date', brand: 'Brand', department: 'Department', journal: 'Journal', reviewStatus: 'Review' },
+  // Chart workflows.
+  charts: {
+    monthly: { month: 'Months', value: 'Net Policy Expense' },
+    department: { name: 'Department', value: 'Net Policy Expense' },
+    journal: { name: 'Journal Name', value: 'Net Policy Expense' },
+    matrixName: 'Department',
+  },
+}
+
+export const MATRIX_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+// Backend MoM numbers are displayed as received: explicit sign, two decimals, no scaling.
+export function momChange(percent) {
+  const rounded = Number(percent.toFixed(2))
+  return {
+    label: `${rounded < 0 ? '-' : '+'}${Math.abs(rounded).toFixed(2)}%`,
+    direction: Math.sign(rounded),
+    zeroBaseline: false,
+  }
 }
 
 const fail = (message) => {
@@ -61,7 +81,7 @@ export function normalizeMom(json) {
   if (!table) return { empty: true }
   const change = (key) => {
     const percent = toNumber(table.rows[0][table.positions[key]], COLUMNS.mom[key])
-    return percent == null ? { label: '—', direction: 0, zeroBaseline: false } : changeModel(percent)
+    return percent == null ? { label: '—', direction: 0, zeroBaseline: false, unavailable: true } : momChange(percent)
   }
   return { net: change('net'), deb: change('deb'), credits: change('credits'), lines: change('lines'), refs: change('refs'), window: null }
 }
@@ -77,4 +97,67 @@ export function normalizeTrend(json) {
     }
   })
   return { rows }
+}
+
+// ---- Filter-option workflows -------------------------------------------------------------
+
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
+
+// Backend dates arrive as YYYY-MM-DD and are kept in that form (the date inputs use it too).
+// The outgoing request format DD-MM-YYYY is produced separately by toWorkflowDate.
+export function normalizeDateBounds(json) {
+  const table = readColumns(json, { min: COLUMNS.filters.min, max: COLUMNS.filters.max })
+  if (!table) return { empty: true }
+  const row = table.rows[0]
+  const [min, max] = [row[table.positions.min], row[table.positions.max]]
+  if (min == null && max == null) return { empty: true }
+  for (const value of [min, max]) if (typeof value !== 'string' || !ISO_DATE.test(value)) fail('Invalid date bound (expected YYYY-MM-DD)')
+  if (min > max) fail('Invalid date bounds (Min_Date is after Max_Date)')
+  return { min, max }
+}
+
+// Option values are kept exactly as the backend sends them (no trimming, no spelling fixes).
+export function normalizeOptions(json, column) {
+  const table = readColumns(json, { value: column })
+  if (!table) return { empty: true }
+  const options = []
+  for (const row of table.rows) {
+    const value = Array.isArray(row) ? row[table.positions.value] : fail('Unexpected response format')
+    if (value == null) continue
+    if (typeof value !== 'string') fail(`Invalid option value for "${column}"`)
+    if (!options.includes(value)) options.push(value)
+  }
+  return options.length ? { options } : { empty: true }
+}
+
+export const normalizeBrandOptions = (json) => normalizeOptions(json, COLUMNS.filters.brand)
+export const normalizeDepartmentOptions = (json) => normalizeOptions(json, COLUMNS.filters.department)
+export const normalizeJournalOptions = (json) => normalizeOptions(json, COLUMNS.filters.journal)
+export const normalizeReviewOptions = (json) => normalizeOptions(json, COLUMNS.filters.reviewStatus)
+
+// ---- Chart workflows ---------------------------------------------------------------------
+
+const text = (row, position) => (Array.isArray(row) && typeof row[position] === 'string' ? row[position] : fail('Unexpected response format'))
+
+export function normalizeMonthlyTrend(json) {
+  const table = readColumns(json, COLUMNS.charts.monthly)
+  if (!table) return { empty: true }
+  return { rows: table.rows.map((row) => ({ month: text(row, table.positions.month), value: toNumber(row[table.positions.value], COLUMNS.charts.monthly.value) })) }
+}
+
+const named = (columns) => (json) => {
+  const table = readColumns(json, columns)
+  if (!table) return { empty: true }
+  return { items: table.rows.map((row) => ({ name: text(row, table.positions.name), value: toNumber(row[table.positions.value], columns.value) })) }
+}
+export const normalizeExpenseByDepartment = named(COLUMNS.charts.department)
+export const normalizeExpenseByJournal = named(COLUMNS.charts.journal)
+
+export function normalizeMatrix(json) {
+  const table = readColumns(json, { name: COLUMNS.charts.matrixName, ...Object.fromEntries(MATRIX_MONTHS.map((m) => [m, m])) })
+  if (!table) return { empty: true }
+  return {
+    months: MATRIX_MONTHS,
+    rows: table.rows.map((row) => ({ name: text(row, table.positions.name), values: MATRIX_MONTHS.map((m) => toNumber(row[table.positions[m]], m)) })),
+  }
 }

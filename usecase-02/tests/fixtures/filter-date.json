@@ -1,0 +1,41 @@
+{
+    "version": {
+        "name": "vanilla",
+        "version": "Lumenore Studio"
+    },
+    "status": {
+        "code": "200",
+        "value": "success"
+    },
+    "data": {
+        "data": {
+            "queryInfo": {
+                "totalRows": 1,
+                "type": "selected"
+            },
+            "resultSet": [
+                [
+                    "2026-01-01",
+                    "2026-10-31"
+                ]
+            ],
+            "metaData": [
+                {
+                    "colIndex": 0,
+                    "colName": "Min_Date",
+                    "colType": "Date",
+                    "colId": "Min_Date",
+                    "cryptographicFunction": "NONE"
+                },
+                {
+                    "colIndex": 1,
+                    "colName": "Max_Date",
+                    "colType": "Date",
+                    "colId": "Max_Date",
+                    "cryptographicFunction": "NONE"
+                }
+            ]
+        }
+    },
+    "error": false
+}

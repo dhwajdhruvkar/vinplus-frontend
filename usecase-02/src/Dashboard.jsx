@@ -15,6 +15,7 @@ import ReviewDrawer from './components/ReviewDrawer.jsx'
 import ProfileDrawer from './components/ProfileDrawer.jsx'
 import ChartTooltip from './components/ChartTooltip.jsx'
 import { DATA_MODE } from './api/workflowConfig.js'
+import { useFilterOptions } from './hooks/useFilterOptions.js'
 import { useWorkflowData } from './hooks/useWorkflowData.js'
 import Toast from './components/Toast.jsx'
 import PolicyWorkControl from './pages/PolicyWorkControl.jsx'
@@ -50,6 +51,8 @@ export default function Dashboard({ onLogout }) {
   const rows = baseFilter(filters, review)
   const workflow = useWorkflowData(filters, DATA_MODE === 'live' && tab === 'overview')
   const live = DATA_MODE === 'live' ? workflow : null
+  const filterOptions = useFilterOptions(DATA_MODE === 'live')
+  const liveOptions = DATA_MODE === 'live' ? filterOptions : null
   const profile = profiles.manager
   const drawerRow = drawer?.kind === 'review' ? ROW_BY_ID.get(drawer.id) || ROWS[0] : null
   const drawerOpen = drawer !== null
@@ -197,7 +200,7 @@ export default function Dashboard({ onLogout }) {
             onToggleNotifications={() => setNotificationsOpen(!notificationsOpen)} onReadAll={readAllNotifications}
             onOpenNotification={openNotification} onProfile={openProfile} onLogout={onLogout}
           />
-          <FilterToolbar filters={filters} chips={activeFilterChips(filters)} onFilter={setFilter} onDate={setDate} onClearOne={clearOne} />
+          <FilterToolbar filters={filters} chips={activeFilterChips(filters)} liveOptions={liveOptions} onFilter={setFilter} onDate={setDate} onClearOne={clearOne} />
           <main className="body" id="content">
             {tab === 'overview' ? (
               <PolicyWorkControl

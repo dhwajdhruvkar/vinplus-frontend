@@ -1,0 +1,65 @@
+{
+    "version": {
+        "name": "vanilla",
+        "version": "Lumenore Studio"
+    },
+    "status": {
+        "code": "200",
+        "value": "success"
+    },
+    "data": {
+        "data": {
+            "queryInfo": {
+                "totalRows": 1,
+                "type": "selected"
+            },
+            "resultSet": [
+                [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                ]
+            ],
+            "metaData": [
+                {
+                    "colIndex": 0,
+                    "colName": "MoM - Net Policy Expense",
+                    "colType": "Float",
+                    "colId": "MoM - Net Policy Expense",
+                    "cryptographicFunction": "NONE"
+                },
+                {
+                    "colIndex": 1,
+                    "colName": "MoM - Gross Policy Debits",
+                    "colType": "Float",
+                    "colId": "MoM - Gross Policy Debits",
+                    "cryptographicFunction": "NONE"
+                },
+                {
+                    "colIndex": 2,
+                    "colName": "MoM - Credits / Offsets",
+                    "colType": "Float",
+                    "colId": "MoM - Credits / Offsets",
+                    "cryptographicFunction": "NONE"
+                },
+                {
+                    "colIndex": 3,
+                    "colName": "MoM - Policy Posting Entries",
+                    "colType": "Numeric",
+                    "colId": "MoM - Policy Posting Entries",
+                    "cryptographicFunction": "NONE"
+                },
+                {
+                    "colIndex": 4,
+                    "colName": "MoM - Unique References",
+                    "colType": "Numeric",
+                    "colId": "MoM - Unique References",
+                    "cryptographicFunction": "NONE"
+                }
+            ]
+        }
+    },
+    "error": false
+}

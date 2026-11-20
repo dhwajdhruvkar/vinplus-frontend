@@ -1,0 +1,69 @@
+{
+    "version": {
+        "name": "vanilla",
+        "version": "Lumenore Studio"
+    },
+    "status": {
+        "code": "200",
+        "value": "success"
+    },
+    "data": {
+        "data": {
+            "queryInfo": {
+                "totalRows": 13,
+                "type": "selected"
+            },
+            "resultSet": [
+                [
+                    "Af Policy Work P&A"
+                ],
+                [
+                    "Af Policy Work Srv"
+                ],
+                [
+                    "Af Policy Work-Veh New"
+                ],
+                [
+                    "Af Policy Work-Veh Usd"
+                ],
+                [
+                    "Fer Policy Work P&A"
+                ],
+                [
+                    "Fer Policy Work Srv"
+                ],
+                [
+                    "Fer Policy Work-Veh New"
+                ],
+                [
+                    "Fer Policy Work-Veh Usd"
+                ],
+                [
+                    "Jj Policy Work-Veh Usd"
+                ],
+                [
+                    "Mas Policy Work P&A"
+                ],
+                [
+                    "Mas Policy Work Srv"
+                ],
+                [
+                    "Mas Policy Work-Veh New"
+                ],
+                [
+                    "Mas Policy Work-Veh Usd"
+                ]
+            ],
+            "metaData": [
+                {
+                    "colIndex": 0,
+                    "colName": "Department",
+                    "colType": "Varchar",
+                    "colId": "Department",
+                    "cryptographicFunction": "NONE"
+                }
+            ]
+        }
+    },
+    "error": false
+}

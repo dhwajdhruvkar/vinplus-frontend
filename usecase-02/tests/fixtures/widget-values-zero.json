@@ -1,0 +1,73 @@
+{
+    "version": {
+        "name": "vanilla",
+        "version": "Lumenore Studio"
+    },
+    "status": {
+        "code": "200",
+        "value": "success"
+    },
+    "data": {
+        "data": {
+            "queryInfo": {
+                "totalRows": 1,
+                "type": "selected"
+            },
+            "resultSet": [
+                [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            ],
+            "metaData": [
+                {
+                    "colIndex": 0,
+                    "colName": "Net Policy Expense",
+                    "colType": "Float",
+                    "colId": "Net Policy Expense",
+                    "cryptographicFunction": "NONE"
+                },
+                {
+                    "colIndex": 1,
+                    "colName": "Gross Policy Debits",
+                    "colType": "Float",
+                    "colId": "Gross Policy Debits",
+                    "cryptographicFunction": "NONE"
+                },
+                {
+                    "colIndex": 2,
+                    "colName": "Credits / Offsets",
+                    "colType": "Float",
+                    "colId": "Credits / Offsets",
+                    "cryptographicFunction": "NONE"
+                },
+                {
+                    "colIndex": 3,
+                    "colName": "Policy Posting Entries",
+                    "colType": "Integer",
+                    "colId": "Policy Posting Entries",
+                    "cryptographicFunction": "NONE"
+                },
+                {
+                    "colIndex": 4,
+                    "colName": "Unique References",
+                    "colType": "Integer",
+                    "colId": "Unique References",
+                    "cryptographicFunction": "NONE"
+                },
+                {
+                    "colIndex": 5,
+                    "colName": "High-Value Review Candidates",
+                    "colType": "Integer",
+                    "colId": "High-Value Review Candidates",
+                    "cryptographicFunction": "NONE"
+                }
+            ]
+        }
+    },
+    "error": false
+}

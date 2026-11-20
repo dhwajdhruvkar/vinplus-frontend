@@ -1,0 +1,89 @@
+{
+    "version": {
+        "name": "vanilla",
+        "version": "Lumenore Studio"
+    },
+    "status": {
+        "code": "200",
+        "value": "success"
+    },
+    "data": {
+        "data": {
+            "queryInfo": {
+                "totalRows": 13,
+                "type": "selected"
+            },
+            "resultSet": [
+                [
+                    "Fer Policy Work Srv",
+                    320594.48
+                ],
+                [
+                    "Fer Policy Work-Veh Usd",
+                    306326.98
+                ],
+                [
+                    "Mas Policy Work Srv",
+                    100576.70999999999
+                ],
+                [
+                    "Af Policy Work Srv",
+                    100573.18
+                ],
+                [
+                    "Fer Policy Work-Veh New",
+                    83501.85
+                ],
+                [
+                    "Jj Policy Work-Veh Usd",
+                    51648.81
+                ],
+                [
+                    "Mas Policy Work-Veh Usd",
+                    14729.539999999999
+                ],
+                [
+                    "Mas Policy Work-Veh New",
+                    4610.07
+                ],
+                [
+                    "Af Policy Work-Veh New",
+                    3067.5299999999997
+                ],
+                [
+                    "Fer Policy Work P&A",
+                    2460.52
+                ],
+                [
+                    "Af Policy Work P&A",
+                    2083.21
+                ],
+                [
+                    "Mas Policy Work P&A",
+                    2055.8300000000004
+                ],
+                [
+                    "Af Policy Work-Veh Usd",
+                    748.47
+                ]
+            ],
+            "metaData": [
+                {
+                    "colIndex": 0,
+                    "colName": "Department",
+                    "colType": "Varchar",
+                    "colId": "Department",
+                    "cryptographicFunction": "NONE"
+                },
+                {
+                    "colIndex": 1,
+                    "colName": "Net Policy Expense",
+                    "colType": "Float",
+                    "colId": "Net Policy Expense",
+                    "cryptographicFunction": "NONE"
+                }
+            ]
+        }
+    },
+    "error": false
+}

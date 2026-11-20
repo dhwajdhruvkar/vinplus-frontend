@@ -1,8 +1,10 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
-import { normalizeMom, normalizeTrend, normalizeValues } from '../src/api/workflowAdapters.js'
+import { COLUMNS, momChange, normalizeMom, normalizeTrend, normalizeValues } from '../src/api/workflowAdapters.js'
 import { WorkflowError, postWorkflow, toWorkflowDate, toWorkflowVariables } from '../src/api/workflowClient.js'
+import { APP_ID, CHART_WORKFLOW_IDS, DEV_PROXY_PATH, FILTER_WORKFLOW_IDS, WORKFLOW_IDS } from '../src/api/workflowConfig.js'
+import viteConfig from '../vite.config.js'
 import { DEFAULT_FILTERS } from '../src/utils/policy.js'
 
 // Complete response objects supplied by the backend team (see tests/fixtures). They are local fixtures,
@@ -74,21 +76,38 @@ test('an empty result set is reported as empty, not as zeros', () => {
   assert.deepEqual(normalizeTrend(withResultSet(TREND, [])), { empty: true })
 })
 
-test('Widget MOM maps the five supplied values unscaled, keeping signs, with no High-Value entry', () => {
+test('Widget MOM maps the five supplied values unscaled with explicit signs and two decimals', () => {
   const mom = normalizeMom(MOM)
   assert.deepEqual(Object.keys(mom).sort(), ['credits', 'deb', 'lines', 'net', 'refs', 'window'])
-  assert.deepEqual(mom.net, { label: '+17.2%', direction: 1, zeroBaseline: false })
-  assert.deepEqual(mom.deb, { label: '+15.9%', direction: 1, zeroBaseline: false })
-  assert.deepEqual(mom.credits, { label: '+3.4%', direction: 1, zeroBaseline: false })
-  assert.deepEqual(mom.lines, { label: '−3.0%', direction: -1, zeroBaseline: false })
-  assert.deepEqual(mom.refs, { label: '−2.8%', direction: -1, zeroBaseline: false })
+  assert.deepEqual(mom.net, { label: '+17.22%', direction: 1, zeroBaseline: false })
+  assert.deepEqual(mom.deb, { label: '+15.88%', direction: 1, zeroBaseline: false })
+  assert.deepEqual(mom.credits, { label: '+3.37%', direction: 1, zeroBaseline: false })
+  assert.deepEqual(mom.lines, { label: '-3.05%', direction: -1, zeroBaseline: false })
+  assert.deepEqual(mom.refs, { label: '-2.77%', direction: -1, zeroBaseline: false })
   assert.equal(mom.window, null)
-  assert.equal('review' in mom, false)
+})
+
+test('High-Value Review Candidates has no MoM mapping or value', () => {
+  assert.equal('review' in COLUMNS.mom, false)
+  assert.equal(Object.keys(COLUMNS.mom).length, 5)
+  assert.equal('review' in normalizeMom(MOM), false)
+})
+
+test('MoM display: positive, negative, zero and exactly two decimals', () => {
+  assert.equal(momChange(17.22).label, '+17.22%')
+  assert.equal(momChange(-17.22).label, '-17.22%')
+  assert.equal(momChange(0).label, '+0.00%')
+  assert.equal(momChange(-3.05).label, '-3.05%')
+  assert.equal(momChange(5).label, '+5.00%')
+  assert.equal(momChange(-0.4).label, '-0.40%')
+  assert.equal(momChange(2.999).label, '+3.00%')
+  assert.equal(momChange(-0.001).label, '+0.00%')
+  assert.deepEqual([momChange(1).direction, momChange(-1).direction, momChange(0).direction], [1, -1, 0])
 })
 
 test('Widget MOM maps by column name when the order changes, and handles zero', () => {
   assert.deepEqual(normalizeMom(reordered(MOM)), normalizeMom(MOM))
-  assert.deepEqual(normalizeMom(withResultSet(MOM, [[0, 0, 0, 0, 0]])).net, { label: '0.0%', direction: 0, zeroBaseline: false })
+  assert.deepEqual(normalizeMom(withResultSet(MOM, [[0, 0, 0, 0, 0]])).net, { label: '+0.00%', direction: 0, zeroBaseline: false })
 })
 
 test('Widget Trend maps all ten rows and six series exactly, in backend order', () => {
@@ -167,6 +186,87 @@ test('postWorkflow maps HTTP and network failures to user-safe messages', async 
       throw new TypeError('Failed to fetch')
     }
     await assert.rejects(postWorkflow('x', {}), /CORS/)
+  } finally {
+    globalThis.fetch = original
+  }
+})
+
+test('all three workflows are sent the same six-variable filter snapshot', async () => {
+  const original = globalThis.fetch
+  const sent = []
+  globalThis.fetch = async (url, options) => {
+    sent.push({ id: url.split('/').pop(), variable: JSON.parse(options.body.get('data')).variable })
+    return new Response(JSON.stringify(VALUES), { status: 200 })
+  }
+  try {
+    const variables = toWorkflowVariables({ ...DEFAULT_FILTERS, dept: 'Service', dateStart: '2026-05-01', dateEnd: '2026-05-31' })
+    for (const id of Object.values(WORKFLOW_IDS)) await postWorkflow(id, variables)
+    assert.deepEqual(sent.map((s) => s.id), Object.values(WORKFLOW_IDS))
+    for (const { variable } of sent) {
+      assert.deepEqual(Object.keys(variable), ['Brand', 'Department', 'Journal', 'Review_Status', 'Min_Date', 'Max_Date'])
+      assert.deepEqual(variable, sent[0].variable)
+    }
+    assert.equal(sent[0].variable.Min_Date, '01-05-2026')
+    assert.equal(sent[0].variable.Max_Date, '31-05-2026')
+  } finally {
+    globalThis.fetch = original
+  }
+})
+
+test('the Vite dev proxy forwards to the Lumenore workflow endpoint and exists for development only', () => {
+  const proxy = viteConfig.server.proxy[DEV_PROXY_PATH.replace(/\/$/, '')]
+  assert.equal(proxy.target, 'https://apphub.lumenore.com')
+  assert.equal(proxy.changeOrigin, true)
+  assert.equal(proxy.rewrite(`${DEV_PROXY_PATH}${WORKFLOW_IDS.mom}`), `/appsapi/appbuilder/workflow/${WORKFLOW_IDS.mom}`)
+  assert.equal('headers' in proxy, false)
+  assert.equal(viteConfig.preview, undefined)
+})
+
+test('the workflow registry holds the three KPI, five filter and four chart IDs', () => {
+  assert.deepEqual(WORKFLOW_IDS, {
+    values: '219b13e1-e278-11f1-90ac-bbceffb96a86',
+    mom: '42b611b4-e282-11f1-bb3e-2b181ae5ba27',
+    trend: '91105879-e27e-11f1-90ac-6190e2b6d09a',
+  })
+  assert.deepEqual(FILTER_WORKFLOW_IDS, {
+    date: '62918141-e3d8-11f1-9762-a5af176bbe5f',
+    brand: '2061a1bb-e403-11f1-9762-dde4e7ef0ade',
+    department: '5acbdaee-e403-11f1-a77e-f5de89fb1959',
+    journal: '849b9706-e403-11f1-bb3e-d3f9dbfde49a',
+    reviewStatus: 'ca75d2cc-e403-11f1-9762-afebec02bed8',
+  })
+  assert.deepEqual(CHART_WORKFLOW_IDS, {
+    monthlyPolicyExpenseTrend: '34193547-e289-11f1-bb3e-09f97608afe2',
+    expenseByDepartment: 'bf89a2cf-e316-11f1-bc8d-8f751d6bb36e',
+    expenseByJournal: '102810d7-e317-11f1-a77e-e5d170f381f7',
+    departmentMonthReviewMatrix: 'fe8e5d08-e31f-11f1-9762-0d3e12db583a',
+  })
+  const all = [WORKFLOW_IDS, FILTER_WORKFLOW_IDS, CHART_WORKFLOW_IDS].flatMap(Object.values)
+  assert.equal(all.length, 12)
+  assert.equal(new Set(all).size, 12)
+  assert.notEqual(WORKFLOW_IDS.trend, CHART_WORKFLOW_IDS.monthlyPolicyExpenseTrend)
+  for (const id of all) assert.match(id, /^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/)
+})
+
+test('the existing dev proxy and request client handle all twelve workflow IDs', async () => {
+  const proxy = viteConfig.server.proxy[DEV_PROXY_PATH.replace(/\/$/, '')]
+  const original = globalThis.fetch
+  const urls = []
+  globalThis.fetch = async (url, options) => {
+    urls.push({ url, appId: JSON.parse(options.body.get('data')).data.appId, headers: Object.keys(options.headers), credentials: options.credentials })
+    return new Response(JSON.stringify(VALUES), { status: 200 })
+  }
+  try {
+    for (const id of [WORKFLOW_IDS, FILTER_WORKFLOW_IDS, CHART_WORKFLOW_IDS].flatMap(Object.values)) {
+      assert.equal(proxy.rewrite(`${DEV_PROXY_PATH}${id}`), `/appsapi/appbuilder/workflow/${id}`)
+      await postWorkflow(id, toWorkflowVariables(DEFAULT_FILTERS))
+    }
+    assert.equal(urls.length, 12)
+    for (const call of urls) {
+      assert.equal(call.appId, APP_ID)
+      assert.deepEqual(call.headers, ['application-id'])
+      assert.equal(call.credentials, 'omit')
+    }
   } finally {
     globalThis.fetch = original
   }

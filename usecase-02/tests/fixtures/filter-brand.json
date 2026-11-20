@@ -1,0 +1,42 @@
+{
+    "version": {
+        "name": "vanilla",
+        "version": "Lumenore Studio"
+    },
+    "status": {
+        "code": "200",
+        "value": "success"
+    },
+    "data": {
+        "data": {
+            "queryInfo": {
+                "totalRows": 4,
+                "type": "selected"
+            },
+            "resultSet": [
+                [
+                    "Af"
+                ],
+                [
+                    "Fer"
+                ],
+                [
+                    "Jj"
+                ],
+                [
+                    "Mas"
+                ]
+            ],
+            "metaData": [
+                {
+                    "colIndex": 0,
+                    "colName": "Brand",
+                    "colType": "Varchar",
+                    "colId": "Brand",
+                    "cryptographicFunction": "NONE"
+                }
+            ]
+        }
+    },
+    "error": false
+}

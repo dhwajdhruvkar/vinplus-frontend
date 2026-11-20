@@ -1,9 +1,22 @@
 import { useEffect, useState } from 'react'
-import { normalizeMom, normalizeTrend, normalizeValues } from '../api/workflowAdapters.js'
+import {
+  normalizeExpenseByDepartment, normalizeExpenseByJournal, normalizeMatrix, normalizeMom, normalizeMonthlyTrend, normalizeTrend, normalizeValues,
+} from '../api/workflowAdapters.js'
 import { postWorkflow, toWorkflowVariables } from '../api/workflowClient.js'
-import { WORKFLOW_IDS } from '../api/workflowConfig.js'
+import { CHART_WORKFLOW_IDS, WORKFLOW_IDS } from '../api/workflowConfig.js'
 
-const WORKFLOWS = [['values', normalizeValues], ['mom', normalizeMom], ['trend', normalizeTrend]]
+// KPI workflows (values, mom, trend) and chart workflows (monthly, department, journal, matrix).
+// `trend` is the KPI trend workflow and `monthly` is the separate Monthly Policy Expense Trend chart workflow; they are never merged.
+// The chart workflows receive the same six-variable snapshot as the KPI workflows. Whether the chart workflows accept these variables is not confirmed by the backend.
+const WORKFLOWS = [
+  ['values', WORKFLOW_IDS.values, normalizeValues],
+  ['mom', WORKFLOW_IDS.mom, normalizeMom],
+  ['trend', WORKFLOW_IDS.trend, normalizeTrend],
+  ['monthly', CHART_WORKFLOW_IDS.monthlyPolicyExpenseTrend, normalizeMonthlyTrend],
+  ['department', CHART_WORKFLOW_IDS.expenseByDepartment, normalizeExpenseByDepartment],
+  ['journal', CHART_WORKFLOW_IDS.expenseByJournal, normalizeExpenseByJournal],
+  ['matrix', CHART_WORKFLOW_IDS.departmentMonthReviewMatrix, normalizeMatrix],
+]
 const slot = (status) => ({ status, data: null, error: null })
 
 export function useWorkflowData(filters, enabled) {
@@ -16,9 +29,9 @@ export function useWorkflowData(filters, enabled) {
     const controllers = WORKFLOWS.map(() => new AbortController())
     const settle = (name, result) => setSettled((current) => ({ ...current, [name]: result }))
 
-    WORKFLOWS.forEach(([name, normalize], i) => {
+    WORKFLOWS.forEach(([name, id, normalize], i) => {
       const { signal } = controllers[i]
-      postWorkflow(WORKFLOW_IDS[name], variables, signal)
+      postWorkflow(id, variables, signal)
         .then(normalize)
         .then(
           (data) => !signal.aborted && settle(name, data.empty ? slot('empty') : { status: 'success', data, error: null }),

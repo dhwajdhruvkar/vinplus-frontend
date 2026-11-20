@@ -1,0 +1,78 @@
+{
+    "version": {
+        "name": "vanilla",
+        "version": "Lumenore Studio"
+    },
+    "status": {
+        "code": "200",
+        "value": "success"
+    },
+    "data": {
+        "data": {
+            "queryInfo": {
+                "totalRows": 16,
+                "type": "selected"
+            },
+            "resultSet": [
+                [
+                    "Ach-Wires-Debit Items"
+                ],
+                [
+                    "Cash Disbursements"
+                ],
+                [
+                    "Cash Receipts (Balance Fwd)"
+                ],
+                [
+                    "Cash Receipts (Open-Item)"
+                ],
+                [
+                    "Consignment Vehicles"
+                ],
+                [
+                    "General Journal"
+                ],
+                [
+                    "General Purchases"
+                ],
+                [
+                    "New Vehicle Purchases"
+                ],
+                [
+                    "Parts Sales Cash"
+                ],
+                [
+                    "Recurring"
+                ],
+                [
+                    "Service Sales Cash"
+                ],
+                [
+                    "Used Car Sales Journal"
+                ],
+                [
+                    "Used Car Wholesale"
+                ],
+                [
+                    "Used Vehicle Purchases"
+                ],
+                [
+                    "Vehicle Sales"
+                ],
+                [
+                    "Warranty Credits"
+                ]
+            ],
+            "metaData": [
+                {
+                    "colIndex": 0,
+                    "colName": "Journal",
+                    "colType": "Varchar",
+                    "colId": "Journal",
+                    "cryptographicFunction": "NONE"
+                }
+            ]
+        }
+    },
+    "error": false
+}
